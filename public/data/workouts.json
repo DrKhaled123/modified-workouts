@@ -1,0 +1,206 @@
+{
+  "bulking": [
+    {
+      "day": { "en": "Monday - Chest/Triceps", "ar": "الاثنين - الصدر/ثلاثية الرؤوس" },
+      "exercises": [
+        { 
+          "name": { "en": "Bench Press", "ar": "الضغط المسطح" },
+          "sets": 4, "reps": "8-10", "rest": 120,
+          "desc": { "en": "Focus on chest contraction at the top position", "ar": "التركيز على انقباض الصدر في الوضعية العليا" },
+          "warmup": { "en": "2 sets of 10-12 reps at 50% working weight", "ar": "مجموعتان من 10-12 تكرار بـ50% من وزن التمرين" }
+        },
+        { 
+          "name": { "en": "Incline Dumbbell Press", "ar": "الضغط بالدمبلز على مقعد مائل" },
+          "sets": 3, "reps": "10-12", "rest": 90,
+          "desc": { "en": "Keep shoulders down and back", "ar": "حافظ على الكتفين مائلتين للأسفل والخلف" },
+          "warmup": { "en": "1 set of 12 reps with light weight", "ar": "مجموعة واحدة 12 تكرار بوزن خفيف" }
+        },
+        { 
+          "name": { "en": "Triceps Pushdown", "ar": "دفع ثلاثية الرؤوس" },
+          "sets": 3, "reps": "12-15", "rest": 60,
+          "desc": { "en": "Elbows pinned to sides", "ar": "ثني المرفقين بجانب الجسم" },
+          "warmup": { "en": "1 set of 15 reps with light weight", "ar": "مجموعة واحدة 15 تكرار بوزن خفيف" }
+        }
+      ]
+    },
+    {
+      "day": { "en": "Tuesday - Back/Biceps", "ar": "الثلاثاء - الظهر/ثنائية الرؤوس" },
+      "exercises": [
+        { 
+          "name": { "en": "Pull-ups", "ar": "الشد لأعلى" },
+          "sets": 4, "reps": "Max", "rest": 120,
+          "desc": { "en": "Full range of motion", "ar": "مدى حركة كامل" }
+        },
+        { 
+          "name": { "en": "Bent-over Rows", "ar": "الشد المائل" },
+          "sets": 3, "reps": "10", "rest": 90,
+          "desc": { "en": "Keep back straight", "ar": "الحفاظ على الظهر مستقيماً" }
+        },
+        { 
+          "name": { "en": "Hammer Curls", "ar": "تمارين الهامر" },
+          "sets": 3, "reps": "12", "rest": 60,
+          "desc": { "en": "Palms facing each other", "ar": "الكفوف مواجهة لبعضها" }
+        }
+      ]
+    }
+  ],
+  "cutting": [
+    {
+      "day": { "en": "Monday - Chest/Triceps/HIIT", "ar": "الاثنين - الصدر/ثلاثية الرؤوس/HIIT" },
+      "exercises": [
+        { 
+          "name": { "en": "Incline Dumbbell Press", "ar": "الضغط بالدمبلز على مقعد مائل" },
+          "sets": 3, "reps": "12-15", "rest": 60
+        },
+        { 
+          "name": { "en": "Cable Flye", "ar": "تمارين الصدر بالكابل" },
+          "sets": 3, "reps": "15-20", "rest": 45
+        },
+        { 
+          "name": { "en": "HIIT Sprints", "ar": "سباقات عالية الكثافة" },
+          "sets": 8, "reps": "20s sprint/40s rest", "rest": 0,
+          "duration": 20,
+          "desc": { "en": "Sprint all out for 20s, rest for 40s.", "ar": "جري بأقصى سرعة لمدة 20 ثانية، راحة 40 ثانية." }
+        }
+      ]
+    }
+  ],
+  "queenShape": [
+    {
+      "day": { "en": "Monday - Glutes/Hamstrings", "ar": "الاثنين - الألوية/الفخذ الخلفي" },
+      "exercises": [
+        {
+          "name": { "en": "Hip Thrusts", "ar": "دفع الحوض" },
+          "sets": 4, "reps": "8-12", "rest": 120,
+          "desc": { "en": "Hold at top for 2s. Chin tucked.", "ar": "الثبات في الأعلى لمدة ثانيتين. الذقن للداخل." }
+        },
+        {
+          "name": { "en": "Romanian Deadlift", "ar": "الرفعة المميتة الرومانية" },
+          "sets": 3, "reps": "10-12", "rest": 90,
+          "desc": { "en": "Hinge at hips, keep back flat.", "ar": "الحركة من الورك، الحفاظ على الظهر مستقيماً." }
+        },
+        {
+          "name": { "en": "Glute Kickbacks", "ar": "رفس الألوية للخلف" },
+          "sets": 3, "reps": "15-20", "rest": 60
+        }
+      ]
+    }
+  ],
+  "fatBurn": [
+    {
+      "day": { "en": "Full Body Circuit", "ar": "دائرة الجسم الكامل" },
+      "exercises": [
+        {
+          "name": { "en": "Burpees", "ar": "بيربيز" },
+          "sets": 4, "reps": "45s", "rest": 15,
+          "duration": 45,
+          "desc": { "en": "Full chest to floor.", "ar": "الصدر يلامس الأرض." }
+        },
+        {
+          "name": { "en": "Mountain Climbers", "ar": "تسلق الجبال" },
+          "sets": 4, "reps": "45s", "rest": 15,
+          "duration": 45
+        },
+        {
+          "name": { "en": "Kettlebell Swings", "ar": "أرجحة الكيتل بيل" },
+          "sets": 4, "reps": "45s", "rest": 15,
+          "duration": 45,
+          "desc": { "en": "Explosive hip drive.", "ar": "دفع قوي من الورك." }
+        }
+      ]
+    }
+  ],
+  "strength": [
+    {
+      "day": { "en": "Push Day (Heavy)", "ar": "يوم الدفع (ثقيل)" },
+      "exercises": [
+        {
+          "name": { "en": "Barbell Overhead Press", "ar": "ضغط الكتف بالبار" },
+          "sets": 5, "reps": "5", "rest": 180,
+          "desc": { "en": "Core tight, don't lean back.", "ar": "شد الجذع، لا تمل للخلف." }
+        },
+        {
+          "name": { "en": "Weighted Dips", "ar": "الغطس بالأوزان" },
+          "sets": 4, "reps": "6-8", "rest": 120
+        }
+      ]
+    }
+  ],
+  "endurance": [
+    {
+      "day": { "en": "Metabolic Conditioning", "ar": "التكيف الأيضي" },
+      "exercises": [
+        {
+          "name": { "en": "Jump Rope", "ar": "نط الحبل" },
+          "sets": 1, "reps": "10 mins", "rest": 60,
+          "duration": 600
+        },
+        {
+          "name": { "en": "Bodyweight Squats", "ar": "قرفصاء بوزن الجسم" },
+          "sets": 3, "reps": "50", "rest": 60
+        }
+      ]
+    }
+  ],
+  "athletic": [
+    {
+      "day": { "en": "Plyometrics & Speed", "ar": "بليومتريكس وسرعة" },
+      "exercises": [
+        {
+          "name": { "en": "Box Jumps", "ar": "القفز على الصندوق" },
+          "sets": 5, "reps": "5", "rest": 120,
+          "desc": { "en": "Land soft, explode up.", "ar": "اهبط بنعومة، انفجر للأعلى." }
+        },
+        {
+          "name": { "en": "Sprints", "ar": "جري سريع" },
+          "sets": 6, "reps": "40m", "rest": 180,
+          "duration": 10
+        }
+      ]
+    }
+  ],
+  "mobility": [
+    {
+      "day": { "en": "Full Body Flow", "ar": "تدفق الجسم الكامل" },
+      "exercises": [
+        {
+          "name": { "en": "Deep Squat Hold", "ar": "ثبات القرفصاء العميق" },
+          "sets": 3, "reps": "60s", "rest": 30,
+          "duration": 60,
+          "desc": { "en": "Keep heels down, chest up.", "ar": "الكعبين على الأرض، الصدر للأعلى." }
+        },
+        {
+          "name": { "en": "Cat-Cow Stretch", "ar": "تمرين القطة-البقرة" },
+          "sets": 3, "reps": "60s", "rest": 0,
+          "duration": 60
+        },
+        {
+          "name": { "en": "Thoracic Extension", "ar": "تمدد الفقرات الصدرية" },
+          "sets": 3, "reps": "60s", "rest": 30,
+          "duration": 60
+        }
+      ]
+    }
+  ],
+  "calisthenics": [
+    {
+      "day": { "en": "Push/Pull Skills", "ar": "مهارات الدفع/السحب" },
+      "exercises": [
+        {
+          "name": { "en": "Handstand Hold (Wall)", "ar": "الوقوف على اليدين (الحائط)" },
+          "sets": 4, "reps": "30-60s", "rest": 90,
+          "duration": 45
+        },
+        {
+          "name": { "en": "L-Sit", "ar": "تمرين L-Sit" },
+          "sets": 4, "reps": "10-20s", "rest": 90,
+          "duration": 15
+        },
+        {
+          "name": { "en": "Archer Pushups", "ar": "ضغط رامي السهام" },
+          "sets": 3, "reps": "8-10", "rest": 90
+        }
+      ]
+    }
+  ]
+}

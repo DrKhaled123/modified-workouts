@@ -1,0 +1,191 @@
+[
+  {
+    "id": "bulking",
+    "title": { "en": "Bulking", "ar": "التضخيم العضلي" },
+    "desc": { 
+      "en": "Progressive overload with 48h rest between muscle groups. Caloric surplus +300-500kcal.",
+      "ar": "زيادة الحمل التدريجي مع راحة 48 ساعة بين مجموعات العضلات. فائض سعرات حرارية +300-500 سعرة."
+    },
+    "plan": {
+      "en": "4-day split: Chest/Triceps, Back/Biceps, Legs, Shoulders/Traps",
+      "ar": "برنامج 4 أيام: صدر/ثلاثية الرؤوس، ظهر/ثنائية الرؤوس، أرجل، كتفين/ترابيس"
+    },
+    "points": [
+      { "en": "Hypertrophy focused", "ar": "تركيز على التضخيم" },
+      { "en": "High Calorie Intake", "ar": "استهلاك سعرات عالي" },
+      { "en": "Compound Lifts", "ar": "تمارين مركبة" }
+    ],
+    "techniques": [
+      { "name": { "en": "Drop Sets", "ar": "مجموعات الدروب سيت" }, "desc": { "en": "Perform set to failure, drop weight 20%, continue to failure.", "ar": "أداء المجموعة للفشل، تقليل الوزن 20%، الاستمرار للفشل." } },
+      { "name": { "en": "Slow Eccentric", "ar": "النزول البطيء" }, "desc": { "en": "3-4 seconds lowering phase to maximize muscle damage.", "ar": "مرحلة نزول 3-4 ثواني لتعظيم التمزق العضلي." } }
+    ]
+  },
+  {
+    "id": "cutting",
+    "title": { "en": "Cutting", "ar": "التجفيف" },
+    "desc": { 
+      "en": "High protein intake (2.2g/kg), moderate deficit. Focus on compound movements.",
+      "ar": "تناول بروتين عالي (2.2غ/كلغ وزن)، عجز معتدل. التركيز على التمارين المركبة."
+    },
+    "plan": {
+      "en": "5-day split with cardio sessions. Protein focus: 40% calories",
+      "ar": "برنامج 5 أيام مع جلسات كارديو. التركيز على البروتين: 40% من السعرات"
+    },
+    "points": [
+      { "en": "Fat Loss", "ar": "خسارة الدهون" },
+      { "en": "Muscle Preservation", "ar": "الحفاظ على العضلات" },
+      { "en": "Caloric Deficit", "ar": "عجز السعرات" }
+    ],
+    "techniques": [
+      { "name": { "en": "Supersets", "ar": "سوبر سيت" }, "desc": { "en": "Two exercises back-to-back with no rest to increase heart rate.", "ar": "تمرينين متتاليين بدون راحة لرفع معدل ضربات القلب." } },
+      { "name": { "en": "Rest-Pause", "ar": "راحة-توقف" }, "desc": { "en": "Go to failure, rest 15s, squeeze out 3-4 more reps.", "ar": "الوصول للفشل، راحة 15 ثانية، أداء 3-4 تكرارات إضافية." } }
+    ]
+  },
+  {
+    "id": "queenShape",
+    "title": { "en": "Queen Shape", "ar": "القوام الملكي" },
+    "desc": { 
+      "en": "Glute-focused training 2x/week. Hip thrusts, RDLs, and lateral movements.",
+      "ar": "تمارين مركزة على الألوية مرتين أسبوعياً. رفع الحوض، رومانيان ديدليفت، وحركات جانبية."
+    },
+    "plan": {
+      "en": "Glute activation daily + 2 heavy sessions weekly",
+      "ar": "تنشيط الألوية يومياً + جلستين مكثفتين أسبوعياً"
+    },
+    "points": [
+      { "en": "Glute Focus", "ar": "تركيز على الألوية" },
+      { "en": "Lower Body", "ar": "الجزء السفلي" },
+      { "en": "Shaping", "ar": "تشكيل الجسم" }
+    ],
+    "techniques": [
+      { "name": { "en": "Pause Reps", "ar": "تكرارات التوقف" }, "desc": { "en": "Hold contraction at the top for 2-3 seconds (e.g., Hip Thrusts).", "ar": "الثبات في قمة الانقباض لمدة 2-3 ثواني." } },
+      { "name": { "en": "High Rep Burnouts", "ar": "تكرارات عالية للنهاية" }, "desc": { "en": "20-30 reps at end of workout to deplete glycogen.", "ar": "20-30 تكرار في نهاية التمرين لاستنفاذ الجلايكوجين." } }
+    ]
+  },
+  {
+    "id": "fatBurn",
+    "title": { "en": "Fat Burn", "ar": "حرق الدهون" },
+    "desc": { 
+      "en": "HIIT 2x/week + steady state cardio. NEAT optimization throughout the day.",
+      "ar": "تمارين عالية الكثافة مرتين أسبوعياً + كارديو ثابت. تحسين النشاط اليومي."
+    },
+    "plan": {
+      "en": "Morning fasted cardio + evening strength training",
+      "ar": "كارديو صباحاً على معدة فارغة + تدريب قوة مساءً"
+    },
+    "points": [
+      { "en": "High Intensity", "ar": "شدة عالية" },
+      { "en": "Cardio Heavy", "ar": "تركيز كارديو" },
+      { "en": "Metabolic Boost", "ar": "تعزيز الأيض" }
+    ],
+    "techniques": [
+      { "name": { "en": "Tabata", "ar": "تاباتا" }, "desc": { "en": "20s work, 10s rest for 4 minutes maximum intensity.", "ar": "20 ثانية عمل، 10 ثواني راحة لمدة 4 دقائق بشدة قصوى." } },
+      { "name": { "en": "Circuit Training", "ar": "التدريب الدائري" }, "desc": { "en": "5 exercises in a row with 60s rest after the full round.", "ar": "5 تمارين متتالية مع راحة 60 ثانية بعد الجولة الكاملة." } }
+    ]
+  },
+  {
+    "id": "strength",
+    "title": { "en": "Strength Building", "ar": "بناء القوة" },
+    "desc": { 
+      "en": "Low reps, high weight. Focus on compound lift with long rest periods.",
+      "ar": "تكرارات منخفضة، أوزان عالية. التركيز على التمارين المركبة مع فترات راحة طويلة."
+    },
+    "plan": {
+      "en": "3-day split: Push, Pull, Legs. Heavy singles and doubles weekly.",
+      "ar": "برنامج 3 أيام: دفع، سحب، أرجل. رفعات ثقيلة بمجموعات من 1-2 تكرار أسبوعياً."
+    },
+    "points": [
+      { "en": "Max Strength", "ar": "قوة قصوى" },
+      { "en": "Low Reps", "ar": "تكرارات منخفضة" },
+      { "en": "Long Rest", "ar": "راحة طويلة" }
+    ],
+    "techniques": [
+      { "name": { "en": "5x5 Method", "ar": "طريقة 5x5" }, "desc": { "en": "5 sets of 5 reps with constant weight.", "ar": "5 مجموعات من 5 تكرارات بوزن ثابت." } },
+      { "name": { "en": "Cluster Sets", "ar": "المجموعات العنقودية" }, "desc": { "en": "Perform 1-2 reps, rest 15s, repeat until set is done.", "ar": "أداء 1-2 تكرار، راحة 15 ثانية، التكرار حتى انتهاء المجموعة." } }
+    ]
+  },
+  {
+    "id": "endurance",
+    "title": { "en": "Muscular Endurance", "ar": "تحمل العضلات" },
+    "desc": { 
+      "en": "High reps, moderate weight. Minimal rest periods for metabolic stress.",
+      "ar": "تكرارات عالية، أوزان معتدلة. فترات راحة قصيرة للضغط الأيضي."
+    },
+    "plan": {
+      "en": "Full body circuit training 3x/week. 45-second rest between exercises.",
+      "ar": "تمارين دائرية للجسم الكامل 3 مرات أسبوعياً. راحة 45 ثانية بين التمارين."
+    },
+    "points": [
+      { "en": "High Reps", "ar": "تكرارات عالية" },
+      { "en": "Circuit Training", "ar": "تدريب دائري" },
+      { "en": "Stamina", "ar": "تحمل" }
+    ],
+    "techniques": [
+      { "name": { "en": "AMRAP", "ar": "أكبر عدد تكرارات" }, "desc": { "en": "As Many Reps As Possible in a set time.", "ar": "أكبر عدد ممكن من التكرارات في وقت محدد." } },
+      { "name": { "en": "Pyramid Sets", "ar": "المجموعات الهرمية" }, "desc": { "en": "Start light/high reps, end heavy/low reps.", "ar": "ابدأ خفيف/تكرار عالي، انتهي ثقيل/تكرار منخفض." } }
+    ]
+  },
+  {
+    "id": "athletic",
+    "title": { "en": "Athletic Conditioning", "ar": "التكيف الرياضي" },
+    "desc": { 
+      "en": "Focus on speed, agility, and explosive power. Plyometrics and drills.",
+      "ar": "التركيز على السرعة، الرشاقة، والقوة الانفجارية. تمارين البليومتريكس."
+    },
+    "plan": {
+      "en": "3 days plyometrics + 2 days strength. Sprint intervals included.",
+      "ar": "3 أيام بليومتريكس + يومين قوة. تشمل فترات الجري السريع."
+    },
+    "points": [
+      { "en": "Speed", "ar": "السرعة" },
+      { "en": "Agility", "ar": "الرشاقة" },
+      { "en": "Power", "ar": "القوة" }
+    ],
+    "techniques": [
+      { "name": { "en": "Plyometrics", "ar": "بليومتريكس" }, "desc": { "en": "Explosive jumping movements to increase power output.", "ar": "حركات قفز انفجارية لزيادة ناتج القوة." } },
+      { "name": { "en": "Complex Training", "ar": "التدريب المعقد" }, "desc": { "en": "Heavy lift followed immediately by plyometric movement.", "ar": "رفعة ثقيلة تليها مباشرة حركة بليومترية." } }
+    ]
+  },
+  {
+    "id": "mobility",
+    "title": { "en": "Mobility & Flexibility", "ar": "المرونة والحركة" },
+    "desc": { 
+      "en": "Improve range of motion, reduce injury risk, and correct posture.",
+      "ar": "تحسين مدى الحركة، تقليل خطر الإصابة، وتصحيح القوام."
+    },
+    "plan": {
+      "en": "Daily routine: 20 min morning flow + 10 min evening stretching.",
+      "ar": "روتين يومي: 20 دقيقة تدفق صباحي + 10 دقائق تمدد مسائي."
+    },
+    "points": [
+      { "en": "Joint Health", "ar": "صحة المفاصل" },
+      { "en": "Posture", "ar": "القوام" },
+      { "en": "Recovery", "ar": "التعافي" }
+    ],
+    "techniques": [
+      { "name": { "en": "PNF Stretching", "ar": "تمدد PNF" }, "desc": { "en": "Contract-relax method to deepen the stretch.", "ar": "طريقة الانقباض والاسترخاء لتعميق التمدد." } },
+      { "name": { "en": "Dynamic Warmup", "ar": "الإحماء الديناميكي" }, "desc": { "en": "Moving through range of motion to prepare joints.", "ar": "التحرك خلال مدى الحركة لتجهيز المفاصل." } }
+    ]
+  },
+  {
+    "id": "calisthenics",
+    "title": { "en": "Calisthenics", "ar": "الكاليسثينيكس" },
+    "desc": { 
+      "en": "Master your bodyweight. Pushups, pullups, dips, and advanced levers.",
+      "ar": "أتقن وزن جسمك. ضغط، سحب، غطس، وحركات توازن متقدمة."
+    },
+    "plan": {
+      "en": "Skill work (15 min) + Strength work (45 min). 4x/week.",
+      "ar": "عمل المهارات (15 دقيقة) + عمل القوة (45 دقيقة). 4 مرات أسبوعياً."
+    },
+    "points": [
+      { "en": "Body Control", "ar": "التحكم بالجسم" },
+      { "en": "Core Strength", "ar": "قوة الجذع" },
+      { "en": "Functional", "ar": "وظيفي" }
+    ],
+    "techniques": [
+      { "name": { "en": "Time Under Tension", "ar": "الوقت تحت التوتر" }, "desc": { "en": "Slow, controlled reps to maximize strength gains.", "ar": "تكرارات بطيئة ومتحكم بها لتعظيم مكاسب القوة." } },
+      { "name": { "en": "Grease the Groove", "ar": "تشحيم المسار" }, "desc": { "en": "Frequent, sub-maximal sets throughout the day.", "ar": "مجموعات متكررة غير قصوى على مدار اليوم." } }
+    ]
+  }
+]

@@ -1,0 +1,126 @@
+{
+  "preWorkout": [
+    {
+      "title": { "en": "Pre-Workout Nutrition (1-2 hours before)", "ar": "التغذية قبل التمرين (1-2 ساعة قبل)" },
+      "items": [
+        { 
+          "name": { "en": "Complex Carbs", "ar": "كربوهيدرات معقدة" },
+          "description": { "en": "Oats, brown rice, sweet potatoes", "ar": "الشوفان، الأرز البني، البطاطا الحلوة" }
+        },
+        { 
+          "name": { "en": "Lean Protein", "ar": "بروتين قليل الدهون" },
+          "description": { "en": "Chicken breast, fish, whey protein", "ar": "صدر الدجاج، السمك، بروتين مصل اللبن" }
+        },
+        { 
+          "name": { "en": "Healthy Fats", "ar": "دهون صحية" },
+          "description": { "en": "Small amount: nuts, avocado", "ar": "كمية صغيرة: مكسرات، أفوكادو" },
+          "recommendation": { "en": "Avoid large amounts pre-workout", "ar": "تجنب الكميات الكبيرة قبل التمرين" }
+        },
+        { 
+          "name": { "en": "Hydration", "ar": "الترطيب" },
+          "description": { "en": "16-20 oz water with electrolytes", "ar": "16-20 أوقية ماء مع إلكتروليتات" }
+        }
+      ]
+    },
+    {
+      "title": { "en": "Quick Pre-Workout (30 minutes before)", "ar": "وجبة سريعة قبل التمرين (30 دقيقة قبل)" },
+      "items": [
+        { 
+          "name": { "en": "Simple Carbs", "ar": "كربوهيدرات بسيطة" },
+          "description": { "en": "Banana, apple, dates for quick energy", "ar": "موز، تفاح، تمر للطاقة السريعة" }
+        },
+        { 
+          "name": { "en": "Protein", "ar": "بروتين" },
+          "description": { "en": "Protein shake, Greek yogurt", "ar": "مشروب بروتين، لبن زبادي يوناني" }
+        },
+        { 
+          "name": { "en": "Caffeine", "ar": "كافيين" },
+          "description": { "en": "100-200mg if tolerated", "ar": "100-200 مليغرام إذا تم تحمله" }
+        }
+      ]
+    }
+  ],
+  "postWorkout": [
+    {
+      "title": { "en": "Post-Workout Nutrition (within 45 minutes)", "ar": "التغذية بعد التمرين (في غضون 45 دقيقة)" },
+      "items": [
+        { 
+          "name": { "en": "Fast Protein", "ar": "بروتين سريع" },
+          "description": { "en": "Whey protein, lean chicken, fish", "ar": "بروتين مصل اللبن، دجاج خالي من الدهون، سمك" }
+        },
+        { 
+          "name": { "en": "High GI Carbs", "ar": "كربوهيدرات عالية المؤشر" },
+          "description": { "en": "White rice, potatoes, dextrose to replenish glycogen", "ar": "الأرز الأبيض، البطاطس، دكستروز لإعادة ملء الجلايكوجين" }
+        },
+        { 
+          "name": { "en": "Electrolytes", "ar": "إلكتروليتات" },
+          "description": { "en": "Coconut water, sports drink", "ar": "ماء جوز الهند، مشروب رياضي" }
+        },
+        { 
+          "name": { "en": "Anti-inflammatory", "ar": "مضادات الالتهاب" },
+          "description": { "en": "Berries, leafy greens, turmeric", "ar": "التوت، الخضروات الورقية، الكركم" }
+        }
+      ]
+    }
+  ],
+  "aminoAcids": [
+    {
+      "title": { "en": "Amino Acids Breakdown", "ar": "تحليل الأحماض الأمينية" },
+      "items": [
+        {
+          "name": { "en": "EAA (Essential Amino Acids)", "ar": "الأحماض الأمينية الأساسية" },
+          "description": { "en": "Contains all 9 essential amino acids needed for muscle synthesis.", "ar": "تحتوي على جميع الأحماض الأمينية التسعة الأساسية اللازمة لبناء العضلات." },
+          "usage": { "en": "Superior for muscle growth. Use intra-workout or if protein intake is low.", "ar": "متفوقة لنمو العضلات. تستخدم أثناء التمرين أو إذا كان تناول البروتين منخفضاً." }
+        },
+        {
+          "name": { "en": "BCAA (Branched-Chain Amino Acids)", "ar": "الأحماض الأمينية متفرعة السلسلة" },
+          "description": { "en": "Contains Leucine, Isoleucine, Valine only.", "ar": "تحتوي على لوسين، إيزولوسين، وفالين فقط." },
+          "usage": { "en": "Good for preventing muscle breakdown (anti-catabolic) during fasted cardio, but inferior to EAAs for growth.", "ar": "جيدة لمنع هدم العضلات أثناء الكارديو على معدة فارغة، لكنها أقل فعالية من EAAs للنمو." }
+        },
+        {
+          "name": { "en": "Glutamine", "ar": "الجلوتامين" },
+          "description": { "en": "Most abundant amino acid in muscles.", "ar": "الحمض الأميني الأكثر وفرة في العضلات." },
+          "usage": { "en": "Vital for gut health and immune system. Limited muscle building benefit unless deficient.", "ar": "حيوي لصحة الأمعاء والجهاز المناعي. فائدة محدودة لبناء العضلات ما لم يكن هناك نقص." }
+        }
+      ]
+    }
+  ],
+  "supplements": [
+    {
+      "title": { "en": "Essential Health (2025 Standard)", "ar": "الصحة الأساسية (معيار 2025)" },
+      "items": [
+        {
+          "name": { "en": "Vitamin D3 + K2", "ar": "فيتامين د3 + ك2" },
+          "description": { "en": "K2 ensures calcium goes to bones, not arteries. D3 supports hormones.", "ar": "ك2 يضمن ذهاب الكالسيوم للعظام لا الشرايين. د3 يدعم الهرمونات." },
+          "dose": { "en": "5000 IU D3 + 100mcg K2 with fat", "ar": "5000 وحدة د3 + 100 ميكروغرام ك2 مع دهون" }
+        },
+        {
+          "name": { "en": "Magnesium Bisglycinate", "ar": "مغنيسيوم بيسجليسينات" },
+          "description": { "en": "High absorption, gentle on stomach. Critical for 300+ enzymes.", "ar": "امتصاص عالي، لطيف على المعدة. حيوي لـ 300+ إنزيم." },
+          "dose": { "en": "400mg before bed", "ar": "400 ملغ قبل النوم" }
+        },
+        {
+          "name": { "en": "Omega-3 (High EPA)", "ar": "أوميغا 3 (عالي EPA)" },
+          "description": { "en": "Reduces systemic inflammation, improves insulin sensitivity.", "ar": "يقلل الالتهاب الجهازي، يحسن حساسية الأنسولين." },
+          "dose": { "en": "2-3g EPA/DHA daily", "ar": "2-3 غرام EPA/DHA يومياً" }
+        }
+      ]
+    },
+    {
+      "title": { "en": "Performance & Recovery", "ar": "الأداء والتعافي" },
+      "items": [
+        {
+          "name": { "en": "Creatine Monohydrate", "ar": "كرياتين مونوهيدرات" },
+          "description": { "en": "The gold standard for power output and cognitive function.", "ar": "المعيار الذهبي لإنتاج الطاقة والوظائف الإدراكية." },
+          "dose": { "en": "5g daily forever", "ar": "5 غرام يومياً للأبد" }
+        },
+        {
+          "name": { "en": "Ashwagandha (KSM-66)", "ar": "أشواغاندا (KSM-66)" },
+          "description": { "en": "Lowers cortisol, may boost testosterone.", "ar": "يخفض الكورتيزول، قد يعزز التستوستيرون." },
+          "dose": { "en": "600mg post-workout or evening", "ar": "600 ملغ بعد التمرين أو مساءً" },
+          "tip": { "en": "Cycle it: 8 weeks on, 2 weeks off.", "ar": "استخدمه بنظام الدورات: 8 أسابيع، أسبوعين راحة." }
+        }
+      ]
+    }
+  ]
+}

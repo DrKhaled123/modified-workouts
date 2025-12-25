@@ -1,0 +1,6 @@
+coach.promedic1.com {
+    root * /root/trae_workouts/dist
+    file_server
+    try_files {path} /index.html
+    tls admin@promedic1.com
+}

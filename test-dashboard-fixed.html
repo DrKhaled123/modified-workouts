@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard - Workout App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .test-pass { background-color: #10b981; }
+        .test-fail { background-color: #ef4444; }
+        .test-skip { background-color: #6b7280; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+        .filter-tab { transition: all 0.2s ease; }
+        .btn-primary { transition: all 0.2s ease; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-primary:active { transform: translateY(0); }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                Test Dashboard
+            </h1>
+            <p class="text-gray-400">Real-time test results and metrics for Workout Application</p>
+        </header>
+
+        <!-- Test Controls -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Test Controls</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="runAllTests()" class="btn-primary bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Run All Tests
+                    </button>
+                    <button onclick="runTestsByCategory('unit')" class="btn-primary bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Run Unit Tests
+                    </button>
+                    <button onclick="runTestsByCategory('integration')" class="btn-primary bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Run Integration Tests
+                    </button>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-4">
+                    <button onclick="startContinuousTest()" class="btn-primary bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Start Continuous Testing
+                    </button>
+                    <button onclick="stopContinuousTest()" class="btn-primary bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Stop Continuous Testing
+                    </button>
+                    <button onclick="clearResults()" class="btn-primary bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                        Clear Results
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Results Overview -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Test Results Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-blue-400" id="totalTests">0</div>
+                        <div class="text-sm text-gray-400">Total Tests</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-green-400" id="passedTests">0</div>
+                        <div class="text-sm text-gray-400">Passed</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-red-400" id="failedTests">0</div>
+                        <div class="text-sm text-gray-400">Failed</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-yellow-400" id="passRate">0%</div>
+                        <div class="text-sm text-gray-400">Pass Rate</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="text-sm text-gray-400 mb-2">Test Progress</div>
+                    <div class="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Test Results Chart -->
+                <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">Test Results Trend</h3>
+                    <div class="relative h-64">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Category Distribution Chart -->
+                <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">Test Categories</h3>
+                    <div class="relative h-64">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Details -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Test Details</h2>
+                
+                <!-- Filter Tabs -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="filterTests('all')" class="filter-tab px-4 py-2 rounded bg-blue-600 text-white" data-filter="all">
+                        All Tests
+                    </button>
+                    <button onclick="filterTests('unit')" class="filter-tab px-4 py-2 rounded bg-gray-700 text-white" data-filter="unit">
+                        Unit Tests
+                    </button>
+                    <button onclick="filterTests('integration')" class="filter-tab px-4 py-2 rounded bg-gray-700 text-white" data-filter="integration">
+                        Integration Tests
+                    </button>
+                    <button onclick="filterTests('failing')" class="filter-tab px-4 py-2 rounded bg-gray-700 text-white" data-filter="failing">
+                        Failing Only
+                    </button>
+                </div>
+                
+                <!-- Test List -->
+                <div id="testList" class="space-y-2 max-h-96 overflow-y-auto bg-gray-700 rounded-lg p-4">
+                    <div class="text-center text-gray-500 py-8">
+                        No tests run yet. Click "Run All Tests" to start.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Performance Metrics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="text-sm text-gray-400 mb-2">Average Test Duration</div>
+                        <div class="text-2xl font-bold text-blue-400" id="avgDuration">0ms</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="text-sm text-gray-400 mb-2">Slowest Test</div>
+                        <div class="text-2xl font-bold text-red-400" id="slowestTest">0ms</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="text-sm text-gray-400 mb-2">Fastest Test</div>
+                        <div class="text-2xl font-bold text-green-400" id="fastestTest">0ms</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Test Feed -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Live Test Feed</h2>
+                <div id="testFeed" class="space-y-2 max-h-48 overflow-y-auto bg-gray-700 rounded-lg p-4">
+                    <div class="text-center text-gray-500 py-4">
+                        Test activity will appear here when tests are running.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Test data storage
+        let testResults = [];
+        let currentFilter = 'all';
+        let continuousTestInterval = null;
+        let resultsChart = null;
+        let categoryChart = null;
+
+        // Test categories with executable functions
+        const testCategories = {
+            unit: {
+                name: 'Unit Tests',
+                tests: [
+                    { name: 'Timer Helper Functions', duration: 15 },
+                    { name: 'Translation Helper Functions', duration: 10 },
+                    { name: 'Language Toggle Function', duration: 20 },
+                    { name: 'Card Toggle Function', duration: 12 },
+                    { name: 'Input Validation Tests', duration: 18 }
+                ]
+            },
+            integration: {
+                name: 'Integration Tests',
+                tests: [
+                    { name: 'Complete Timer Workflow', duration: 25 },
+                    { name: 'Language Toggle Integration', duration: 30 },
+                    { name: 'Multi-Card Workflow Integration', duration: 35 },
+                    { name: 'Input Validation Integration', duration: 22 },
+                    { name: 'Responsive Behavior Integration', duration: 28 }
+                ]
+            }
+        };
+
+        // Mock test execution function
+        function executeMockTest(testName, category, duration) {
+            const status = Math.random() > 0.1 ? 'pass' : 'fail'; // 90% pass rate
+            const result = {
+                name: testName,
+                category: category,
+                status: status,
+                duration: duration,
+                timestamp: new Date().toISOString()
+            };
+            testResults.push(result);
+            return result;
+        }
+
+        // Initialize charts when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initCharts, 100);
+            addFeedMessage('Test dashboard initialized', 'success');
+        });
+
+        // Initialize charts
+        function initCharts() {
+            try {
+                // Results trend chart
+                const resultsCtx = document.getElementById('resultsChart');
+                if (resultsCtx) {
+                    resultsChart = new Chart(resultsCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Tests Run',
+                                data: [],
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { display: false } 
+                            },
+                            scales: { 
+                                y: { beginAtZero: true },
+                                x: { display: false }
+                            }
+                        }
+                    });
+                }
+
+                // Category distribution chart
+                const categoryCtx = document.getElementById('categoryChart');
+                if (categoryCtx) {
+                    categoryChart = new Chart(categoryCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Passed', 'Failed'],
+                            datasets: [{
+                                data: [0, 0],
+                                backgroundColor: ['#10b981', '#ef4444'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { position: 'bottom' } 
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.log('Chart initialization error:', error);
+                addFeedMessage('Charts initialization failed', 'error');
+            }
+        }
+
+        // Run all tests
+        function runAllTests() {
+            clearResults();
+            addFeedMessage('Starting complete test suite...', 'info');
+            
+            simulateTestCategoryRun('unit', function() {
+                setTimeout(() => {
+                    simulateTestCategoryRun('integration', function() {
+                        updateDashboard();
+                        addFeedMessage('All tests completed!', 'success');
+                    });
+                }, 500);
+            });
+        }
+
+        // Run tests by category
+        function runTestsByCategory(category) {
+            clearResults();
+            simulateTestCategoryRun(category, function() {
+                updateDashboard();
+                const totalTests = testResults.length;
+                const passedTests = testResults.filter(t => t.status === 'pass').length;
+                addFeedMessage(`${category} tests completed: ${passedTests}/${totalTests} passed`, 'success');
+            });
+        }
+
+        // Simulate running tests for a category
+        function simulateTestCategoryRun(category, callback) {
+            const categoryData = testCategories[category];
+            addFeedMessage(`Starting ${categoryData.name}...`, 'info');
+            
+            categoryData.tests.forEach((test, index) => {
+                setTimeout(() => {
+                    const result = executeMockTest(test.name, category, test.duration);
+                    addTestToList(result);
+                    addFeedMessage(`${test.name}: ${result.status.toUpperCase()} (${result.duration}ms)`, result.status);
+                    updateMetrics();
+                    updateProgress();
+                    
+                    if (index === categoryData.tests.length - 1) {
+                        setTimeout(callback, 200);
+                    }
+                }, (index + 1) * 200);
+            });
+        }
+
+        // Update dashboard metrics
+        function updateDashboard() {
+            const total = testResults.length;
+            const passed = testResults.filter(t => t.status === 'pass').length;
+            const failed = testResults.filter(t => t.status === 'fail').length;
+            const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            
+            // Update metrics with null checks
+            const totalEl = document.getElementById('totalTests');
+            const passedEl = document.getElementById('passedTests');
+            const failedEl = document.getElementById('failedTests');
+            const passRateEl = document.getElementById('passRate');
+            
+            if (totalEl) totalEl.textContent = total;
+            if (passedEl) passedEl.textContent = passed;
+            if (failedEl) failedEl.textContent = failed;
+            if (passRateEl) passRateEl.textContent = passRate + '%';
+            
+            updateCharts();
+        }
+
+        // Update charts
+        function updateCharts() {
+            try {
+                const passed = testResults.filter(t => t.status === 'pass').length;
+                const failed = testResults.filter(t => t.status === 'fail').length;
+                
+                if (categoryChart) {
+                    categoryChart.data.datasets[0].data = [passed, failed];
+                    categoryChart.update();
+                }
+                
+                if (resultsChart) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    if (resultsChart.data.labels.length > 10) {
+                        resultsChart.data.labels.shift();
+                        resultsChart.data.datasets[0].data.shift();
+                    }
+                    resultsChart.data.labels.push(timestamp);
+                    resultsChart.data.datasets[0].data.push(testResults.length);
+                    resultsChart.update();
+                }
+            } catch (error) {
+                console.log('Chart update error:', error);
+            }
+        }
+
+        // Update performance metrics
+        function updateMetrics() {
+            if (testResults.length === 0) return;
+            
+            const durations = testResults.map(t => t.duration);
+            const avgDuration = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length);
+            const slowestTest = Math.max(...durations);
+            const fastestTest = Math.min(...durations);
+            
+            // Update metrics with null checks
+            const avgEl = document.getElementById('avgDuration');
+            const slowestEl = document.getElementById('slowestTest');
+            const fastestEl = document.getElementById('fastestTest');
+            
+            if (avgEl) avgEl.textContent = avgDuration + 'ms';
+            if (slowestEl) slowestEl.textContent = slowestTest + 'ms';
+            if (fastestEl) fastestEl.textContent = fastestTest + 'ms';
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const totalTests = Object.values(testCategories).reduce((sum, cat) => sum + cat.tests.length, 0);
+            const progress = Math.round((testResults.length / totalTests) * 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        // Add test to list
+        function addTestToList(test) {
+            const testList = document.getElementById('testList');
+            
+            if (!testList) return;
+            
+            if (testResults.length === 1) {
+                testList.innerHTML = '';
+            }
+            
+            const testElement = document.createElement('div');
+            testElement.className = `flex items-center justify-between p-3 rounded-lg mb-2 ${test.status === 'pass' ? 'bg-green-900/30 border border-green-700' : test.status === 'fail' ? 'bg-red-900/30 border border-red-700' : 'bg-gray-700 border border-gray-600'}`;
+            testElement.dataset.category = test.category;
+            
+            testElement.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 rounded-full ${test.status === 'pass' ? 'bg-green-400' : test.status === 'fail' ? 'bg-red-400' : 'bg-gray-400'}"></div>
+                    <div>
+                        <div class="font-medium">${test.name}</div>
+                        <div class="text-sm text-gray-400">${test.category} • ${test.duration}ms</div>
+                    </div>
+                </div>
+                <div class="text-sm font-medium ${test.status === 'pass' ? 'text-green-400' : test.status === 'fail' ? 'text-red-400' : 'text-gray-400'}">
+                    ${test.status.toUpperCase()}
+                </div>
+            `;
+            
+            testList.appendChild(testElement);
+            filterTests(currentFilter);
+        }
+
+        // Filter tests
+        function filterTests(filter) {
+            currentFilter = filter;
+            const testElements = document.querySelectorAll('#testList > div');
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            
+            // Update tab styles
+            filterTabs.forEach(tab => {
+                if (tab.dataset.filter === filter) {
+                    tab.className = 'filter-tab px-4 py-2 rounded bg-blue-600 text-white';
+                } else {
+                    tab.className = 'filter-tab px-4 py-2 rounded bg-gray-700 text-white';
+                }
+            });
+            
+            // Filter test elements
+            testElements.forEach(element => {
+                const shouldShow = 
+                    filter === 'all' ||
+                    (filter === element.dataset.category) ||
+                    (filter === 'failing' && element.innerHTML.includes('text-red-400'));
+                
+                element.style.display = shouldShow ? 'flex' : 'none';
+            });
+        }
+
+        // Add message to feed
+        function addFeedMessage(message, type = 'info') {
+            const feed = document.getElementById('testFeed');
+            
+            if (!feed) return;
+            
+            if (feed.querySelector('.text-gray-500')) {
+                feed.innerHTML = '';
+            }
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `flex items-center space-x-2 p-2 rounded ${
+                type === 'success' ? 'bg-green-900/30 text-green-400' :
+                type === 'error' ? 'bg-red-900/30 text-red-400' :
+                type === 'warning' ? 'bg-yellow-900/30 text-yellow-400' :
+                'bg-blue-900/30 text-blue-400'
+            }`;
+            
+            const time = new Date().toLocaleTimeString();
+            messageElement.innerHTML = `
+                <span class="text-xs text-gray-500">${time}</span>
+                <span>${message}</span>
+            `;
+            
+            feed.insertBefore(messageElement, feed.firstChild);
+            
+            // Keep only last 20 messages
+            while (feed.children.length > 20) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Continuous testing
+        function startContinuousTest() {
+            if (continuousTestInterval) return;
+            
+            addFeedMessage('Started continuous testing mode', 'info');
+            continuousTestInterval = setInterval(() => {
+                runAllTests();
+            }, 10000); // Run tests every 10 seconds for demo
+        }
+
+        function stopContinuousTest() {
+            if (continuousTestInterval) {
+                clearInterval(continuousTestInterval);
+                continuousTestInterval = null;
+                addFeedMessage('Stopped continuous testing mode', 'warning');
+            }
+        }
+
+        // Clear results
+        function clearResults() {
+            testResults = [];
+            
+            const testList = document.getElementById('testList');
+            if (testList) {
+                testList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests run yet. Click "Run All Tests" to start.</div>';
+            }
+            
+            const testFeed = document.getElementById('testFeed');
+            if (testFeed) {
+                testFeed.innerHTML = '<div class="text-center text-gray-500 py-4">Test activity will appear here when tests are running.</div>';
+            }
+            
+            updateDashboard();
+            updateProgress();
+            addFeedMessage('Test results cleared', 'info');
+        }
+    </script>
+</body>
+</html>

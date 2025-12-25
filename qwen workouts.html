@@ -1,0 +1,1633 @@
+qwen workouts.html
+
+import { useState, useEffect } from 'react';
+import { 
+  Timer, Dumbbell, Target, ChevronDown, ChevronUp, 
+  Languages, Home, Calendar, List, ArrowLeftRight,
+  Flame, Leaf, Utensils, AlertTriangle, BookOpen,
+  Sun, Droplet, Brain, Activity, Zap, Play, Pause,
+  RefreshCw, CheckCircle, Info, Coffee, Moon
+} from 'lucide-react';
+
+export default function App() {
+  // State management
+  const [language, setLanguage] = useState('en');
+  const [expandedCards, setExpandedCards] = useState({
+    timer: true,
+    goals: true,
+    levels: false,
+    tips: false,
+    fullWeek: false,
+    homeWorkouts: false,
+    warmup: false,
+    nutrition: false,
+    fasting: false
+  });
+  const [timer, setTimer] = useState({ minutes: 0, seconds: 30, isRunning: false });
+  const [activeTimer, setActiveTimer] = useState(null);
+  const [workoutMode, setWorkoutMode] = useState('bulking');
+  const [activeExercise, setActiveExercise] = useState(null);
+  const [showPreExerciseModal, setShowPreExerciseModal] = useState(false);
+  const [activePlan, setActivePlan] = useState('bulking');
+
+  // Timer functionality
+  useEffect(() => {
+    let interval;
+    if (timer.isRunning && (timer.minutes > 0 || timer.seconds > 0)) {
+      interval = setInterval(() => {
+        setTimer(prev => {
+          if (prev.seconds > 0) {
+            return { ...prev, seconds: prev.seconds - 1 };
+          } else if (prev.minutes > 0) {
+            return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+          } else {
+            clearInterval(interval);
+            return { ...prev, isRunning: false };
+          }
+        });
+      }, 1000);
+    } else if (timer.minutes === 0 && timer.seconds === 0) {
+      clearInterval(interval);
+      if (activeTimer) {
+        const alertMessage = activeTimer === 'rest' 
+          ? (language === 'ar' ? 'وقت الراحة انتهى! تجهز للتمرين التالي' : 'Rest time finished! Get ready for next exercise')
+          : (language === 'ar' ? 'الوقت انتهى!' : 'Time is up!');
+        
+        // Use a timeout to ensure the alert doesn't block the UI thread immediately
+        setTimeout(() => {
+          alert(alertMessage);
+        }, 100);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [timer, activeTimer, language]);
+
+  // Initialize text direction based on language
+  useEffect(() => {
+    document.body.dir = language === 'ar' ? 'rtl' : 'ltr';
+    if (language === 'ar') {
+      document.body.classList.add('font-arabic');
+      document.body.classList.remove('font-sans');
+    } else {
+      document.body.classList.add('font-sans');
+      document.body.classList.remove('font-arabic');
+    }
+  }, [language]);
+
+  // Card toggle handler
+  const toggleCard = (card) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [card]: !prev[card]
+    }));
+  };
+
+  // Timer control handlers
+  const startTimer = (type = null) => {
+    if (timer.minutes === 0 && timer.seconds === 0) {
+      alert(language === 'ar' ? 'يرجى ضبط وقت صالح للمؤقت' : 'Please set a valid time for the timer');
+      return;
+    }
+    setTimer(prev => ({ ...prev, isRunning: true }));
+    setActiveTimer(type);
+  };
+
+  const pauseTimer = () => {
+    setTimer(prev => ({ ...prev, isRunning: false }));
+    setActiveTimer(null);
+  };
+
+  const resetTimer = (mins = 0, secs = 30) => {
+    setTimer({ minutes: mins, seconds: secs, isRunning: false });
+    setActiveTimer(null);
+  };
+
+  // Set timer for exercise rest periods
+  const setRestTimer = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    resetTimer(mins, secs);
+    startTimer('rest');
+  };
+
+  // Helper function for bilingual text
+  const t = (textObj) => {
+    if (!textObj) return '';
+    if (language === 'both') {
+      return `${textObj.en} / ${textObj.ar}`;
+    }
+    return textObj[language] || textObj.en;
+  };
+
+  // Workout data structure with bilingual content
+  const workoutData = {
+    goals: [
+      {
+        id: 'bulking',
+        title: { en: 'Bulking', ar: 'التضخيم العضلي' },
+        desc: { 
+          en: 'Progressive overload with 48h rest between muscle groups. Caloric surplus +300-500kcal.',
+          ar: 'زيادة الحمل التدريجي مع راحة 48 ساعة بين مجموعات العضلات. فائض سعرات حرارية +300-500 سعرة.'
+        },
+        plan: {
+          en: '4-day split: Chest/Triceps, Back/Biceps, Legs, Shoulders/Traps',
+          ar: 'برنامج 4 أيام: صدر/ثلاثية الرؤوس، ظهر/ثنائية الرؤوس، أرجل، كتفين/ترابيس'
+        },
+        exercises: [
+          { name: { en: 'Bench Press', ar: 'الضغط المسطح' }, sets: 4, reps: '8-10', rest: 120 },
+          { name: { en: 'Squats', ar: 'القرفصاء' }, sets: 4, reps: '8-10', rest: 150 },
+          { name: { en: 'Pull-ups', ar: 'الشد لأعلى' }, sets: 3, reps: 'Max', rest: 120 },
+          { name: { en: 'Overhead Press', ar: 'الضغط من فوق الرأس' }, sets: 3, reps: '10-12', rest: 90 },
+          { name: { en: 'Deadlifts', ar: 'الرفعة المميتة' }, sets: 3, reps: '6-8', rest: 180 },
+          { name: { en: 'Barbell Rows', ar: 'الشد بالبار' }, sets: 3, reps: '10', rest: 90 }
+        ]
+      },
+      {
+        id: 'cutting',
+        title: { en: 'Cutting', ar: 'التجفيف' },
+        desc: { 
+          en: 'High protein intake (2.2g/kg), moderate deficit. Focus on compound movements.',
+          ar: 'تناول بروتين عالي (2.2غ/كلغ وزن)، عجز معتدل. التركيز على التمارين المركبة.'
+        },
+        plan: {
+          en: '5-day split with cardio sessions. Protein focus: 40% calories',
+          ar: 'برنامج 5 أيام مع جلسات كارديو. التركيز على البروتين: 40% من السعرات'
+        },
+        exercises: [
+          { name: { en: 'Incline Dumbbell Press', ar: 'الضغط بالدمبلز على مقعد مائل' }, sets: 3, reps: '12-15', rest: 60 },
+          { name: { en: 'Romanian Deadlifts', ar: 'الرفعة الرومانية' }, sets: 3, reps: '15', rest: 60 },
+          { name: { en: 'Lat Pulldowns', ar: 'شد العقلة للأسفل' }, sets: 4, reps: '15', rest: 45 },
+          { name: { en: 'Leg Press', ar: 'ضغط الساق' }, sets: 3, reps: '20', rest: 60 },
+          { name: { en: 'Triceps Pushdown', ar: 'دفع ثلاثية الرؤوس' }, sets: 3, reps: '15-20', rest: 45 },
+          { name: { en: 'Face Pulls', ar: 'شد الوجه' }, sets: 3, reps: '20', rest: 45 }
+        ]
+      },
+      {
+        id: 'queenShape',
+        title: { en: 'Queen Shape', ar: 'القوام الملكي' },
+        desc: { 
+          en: 'Glute-focused training 2x/week. Hip thrusts, RDLs, and lateral movements.',
+          ar: 'تمارين مركزة على الألوية مرتين أسبوعياً. رفع الحوض، رومانيان ديدليفت، وحركات جانبية.'
+        },
+        plan: {
+          en: 'Glute activation daily + 2 heavy sessions weekly',
+          ar: 'تنشيط الألوية يومياً + جلستين مكثفتين أسبوعياً'
+        },
+        exercises: [
+          { name: { en: 'Hip Thrusts', ar: 'رفع الحوض' }, sets: 4, reps: '12', rest: 90 },
+          { name: { en: 'Bulgarian Split Squats', ar: 'القرفصاء البلغارية' }, sets: 3, reps: '10 per leg', rest: 90 },
+          { name: { en: 'Lateral Band Walks', ar: 'المشي الجانبي بالرباط' }, sets: 3, reps: '15 steps each way', rest: 60 },
+          { name: { en: 'Glute Bridges', ar: 'جسور الألوية' }, sets: 3, reps: '20', rest: 60 },
+          { name: { en: 'Cable Pull Throughs', ar: 'سحب الكابل بين الساقين' }, sets: 3, reps: '15', rest: 60 },
+          { name: { en: 'Seated Abductions', ar: 'فتح الساقين جالساً' }, sets: 4, reps: '20', rest: 45 }
+        ]
+      },
+      {
+        id: 'fatBurn',
+        title: { en: 'Fat Burn', ar: 'حرق الدهون' },
+        desc: { 
+          en: 'HIIT 2x/week + steady state cardio. NEAT optimization throughout the day.',
+          ar: 'تمارين عالية الكثافة مرتين أسبوعياً + كارديو ثابت. تحسين النشاط اليومي.'
+        },
+        plan: {
+          en: 'Morning fasted cardio + evening strength training',
+          ar: 'كارديو صباحاً على معدة فارغة + تدريب قوة مساءً'
+        },
+        exercises: [
+          { name: { en: 'Burpees', ar: 'الوثب القرفصاء' }, sets: 4, reps: '30s on/30s off', rest: 0 },
+          { name: { en: 'Mountain Climbers', ar: 'متسلقي الجبل' }, sets: 3, reps: '45s on/15s off', rest: 0 },
+          { name: { en: 'Jump Rope', ar: 'القفز بالحبل' }, sets: 5, reps: '1 min on/30s off', rest: 0 },
+          { name: { en: 'Battle Ropes', ar: 'حبال المعركة' }, sets: 3, reps: '20s on/40s off', rest: 0 },
+          { name: { en: 'Kettlebell Swings', ar: 'تأرجح الكيتل بل' }, sets: 4, reps: '20', rest: 30 },
+          { name: { en: 'Sprint Intervals', ar: 'فترات الجري السريع' }, sets: 6, reps: '30s sprint/90s walk', rest: 0 }
+        ]
+      },
+      {
+        id: 'strength',
+        title: { en: 'Strength Building', ar: 'بناء القوة' },
+        desc: { 
+          en: 'Low reps, high weight. Focus on compound lifts with long rest periods.',
+          ar: 'تكرارات منخفضة، أوزان عالية. التركيز على التمارين المركبة مع فترات راحة طويلة.'
+        },
+        plan: {
+          en: '3-day split: Push, Pull, Legs. Heavy singles and doubles weekly.',
+          ar: 'برنامج 3 أيام: دفع، سحب، أرجل. رفعات ثقيلة بمجموعات من 1-2 تكرار أسبوعياً.'
+        },
+        exercises: [
+          { name: { en: 'Squat', ar: 'القرفصاء' }, sets: 5, reps: '3-5', rest: 180 },
+          { name: { en: 'Bench Press', ar: 'الضغط المسطح' }, sets: 5, reps: '3-5', rest: 180 },
+          { name: { en: 'Deadlift', ar: 'الرفعة المميتة' }, sets: 3, reps: '1-3', rest: 240 },
+          { name: { en: 'Overhead Press', ar: 'الضغط من فوق الرأس' }, sets: 4, reps: '4-6', rest: 150 },
+          { name: { en: 'Weighted Pull-ups', ar: 'شد لأعلى مع أوزان' }, sets: 4, reps: '4-6', rest: 150 },
+          { name: { en: 'Front Squats', ar: 'القرفصاء الأمامية' }, sets: 4, reps: '5-6', rest: 180 }
+        ]
+      },
+      {
+        id: 'endurance',
+        title: { en: 'Muscular Endurance', ar: 'تحمل العضلات' },
+        desc: { 
+          en: 'High reps, moderate weight. Minimal rest periods for metabolic stress.',
+          ar: 'تكرارات عالية، أوزان معتدلة. فترات راحة قصيرة للضغط الأيضي.'
+        },
+        plan: {
+          en: 'Full body circuit training 3x/week. 45-second rest between exercises.',
+          ar: 'تمارين دائرية للجسم الكامل 3 مرات أسبوعياً. راحة 45 ثانية بين التمارين.'
+        },
+        exercises: [
+          { name: { en: 'Push-up Circuit', ar: 'دورة تمارين الضغط' }, sets: 1, reps: '100 total', rest: 0 },
+          { name: { en: 'Bodyweight Squat Blasters', ar: 'قرفصاء بدون أوزان سريعة' }, sets: 1, reps: '150 total', rest: 0 },
+          { name: { en: 'Plank Complex', ar: 'مجمع اللوح الخشبي' }, sets: 5, reps: '60s hold', rest: 15 },
+          { name: { en: 'Lunge Matrix', ar: 'مصفوفة الخطوات الأمامية' }, sets: 1, reps: '80 total', rest: 0 },
+          { name: { en: 'Dips Circuit', ar: 'دورة الغطس' }, sets: 4, reps: '20', rest: 30 },
+          { name: { en: 'Mountain Climber Sprints', ar: 'سprints متسلقي الجبل' }, sets: 3, reps: '60s', rest: 30 }
+        ]
+      }
+    ],
+    
+    levels: [
+      {
+        id: 'beginner',
+        title: { en: 'Beginner', ar: 'مبتدئ' },
+        desc: { 
+          en: 'Master form with light weights. Full body routines 3x/week.',
+          ar: 'إتقان الشكل بأوزان خفيفة. روتين كامل للجسم 3 مرات أسبوعياً.'
+        },
+        plan: {
+          en: '3 sets x 10-12 reps. Rest: 90s between sets',
+          ar: '3 مجموعات × 10-12 تكرار. راحة: 90 ثانية بين المجموعات'
+        },
+        warmup: {
+          en: '5 min light cardio + dynamic stretching (arm circles, leg swings)',
+          ar: '5 دقائق كارديو خفيف + إطالة ديناميكية (تحريك الذراعين، تأرجح الساقين)'
+        }
+      },
+      {
+        id: 'intermediate',
+        title: { en: 'Intermediate', ar: 'متوسط' },
+        desc: { 
+          en: 'Upper/lower split 4x/week. Progressive overload tracking.',
+          ar: 'تقسيم علوي/سفلي 4 مرات أسبوعياً. تتبع الزيادة التدريجية.'
+        },
+        plan: {
+          en: '4 sets x 8-10 reps. Rest: 75s between sets',
+          ar: '4 مجموعات × 8-10 تكرارات. راحة: 75 ثانية بين المجموعات'
+        },
+        warmup: {
+          en: '7 min cardio + activation sets (50% working weight) + mobility drills',
+          ar: '7 دقائق كارديو + مجموعات تنشيط (50% من وزن التمرين) + تمارين مرونة'
+        }
+      },
+      {
+        id: 'advanced',
+        title: { en: 'Advanced', ar: 'متقدم' },
+        desc: { 
+          en: 'Push/pull/legs split. Periodization blocks. Advanced techniques.',
+          ar: 'تقسيم دفع/شد/أرجل. كتل تدريبية دورية. تقنيات متقدمة.'
+        },
+        plan: {
+          en: '5 sets x 6-8 reps. Rest: 60s between sets',
+          ar: '5 مجموعات × 6-8 تكرارات. راحة: 60 ثانية بين المجموعات'
+        },
+        warmup: {
+          en: '10 min zone 2 cardio + specific mobility work + ramp-up sets',
+          ar: '10 دقائق كارديو في المنطقة الثانية + تمارين مرونة محددة + مجموعات تصاعدية'
+        }
+      },
+      {
+        id: 'mature',
+        title: { en: 'Mature Athlete', ar: 'رياضي ناضج' },
+        desc: { 
+          en: 'Emphasize controlled movements. Higher reps (12-15). Prioritize recovery.',
+          ar: 'التركيز على الحركات المسيطر عليها. تكرارات أعلى (12-15). أولوية للتعافي.'
+        },
+        plan: {
+          en: '3 sets x 12-15 reps. Rest: 120s between sets',
+          ar: '3 مجموعات × 12-15 تكرار. راحة: 120 ثانية بين المجموعات'
+        },
+        warmup: {
+          en: '12 min low-impact cardio + foam rolling + thorough dynamic stretching',
+          ar: '12 دقيقة كارديو منخفض التأثير + التدليك بالاسفنج + إطالة ديناميكية شاملة'
+        }
+      }
+    ],
+    
+    fullWeekPlans: {
+      bulking: [
+        {
+          day: { en: 'Monday - Chest/Triceps', ar: 'الاثنين - الصدر/ثلاثية الرؤوس' },
+          exercises: [
+            { 
+              name: { en: 'Bench Press', ar: 'الضغط المسطح' },
+              sets: 4, reps: '8-10', rest: 120,
+              desc: { 
+                en: 'Focus on chest contraction at the top position',
+                ar: 'التركيز على انقباض الصدر في الوضعية العليا'
+              },
+              warmup: {
+                en: '2 sets of 10-12 reps at 50% working weight',
+                ar: 'مجموعتان من 10-12 تكرار بـ50% من وزن التمرين'
+              }
+            },
+            { 
+              name: { en: 'Incline Dumbbell Press', ar: 'الضغط بالدمبلز على مقعد مائل' },
+              sets: 3, reps: '10-12', rest: 90,
+              desc: { 
+                en: 'Keep shoulders down and back throughout movement',
+                ar: 'حافظ على الكتفين مائلتين للأسفل والخلف خلال التمرين'
+              },
+              warmup: {
+                en: '1 set of 12 reps with light weight',
+                ar: 'مجموعة واحدة 12 تكرار بوزن خفيف'
+              }
+            },
+            { 
+              name: { en: 'Triceps Pushdown', ar: 'دفع ثلاثية الرؤوس' },
+              sets: 3, reps: '12-15', rest: 60,
+              desc: { 
+                en: 'Elbows pinned to sides, only forearms move',
+                ar: 'ثني المرفقين بجانب الجسم، تحريك الساعدين فقط'
+              },
+              warmup: {
+                en: '1 set of 15 reps with light weight',
+                ar: 'مجموعة واحدة 15 تكرار بوزن خفيف'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Tuesday - Back/Biceps', ar: 'الثلاثاء - الظهر/ثنائية الرؤوس' },
+          exercises: [
+            { 
+              name: { en: 'Pull-ups', ar: 'الشد لأعلى' },
+              sets: 4, reps: 'Max', rest: 120,
+              desc: { 
+                en: 'Full range of motion, chest to bar',
+                ar: 'مدى حركة كامل، الصدر إلى الشريط'
+              },
+              warmup: {
+                en: '2 sets of 5-8 reps with assistance if needed',
+                ar: 'مجموعتان 5-8 تكرار بمساندة إذا لزم الأمر'
+              }
+            },
+            { 
+              name: { en: 'Bent-over Rows', ar: 'الشد المائل' },
+              sets: 3, reps: '10', rest: 90,
+              desc: { 
+                en: 'Keep back straight, pull to lower abdomen',
+                ar: 'الحفاظ على الظهر مستقيماً، السحب إلى أسفل البطن'
+              },
+              warmup: {
+                en: '2 sets of 10 reps with 50% working weight',
+                ar: 'مجموعتان 10 تكرار بـ50% من وزن التمرين'
+              }
+            },
+            { 
+              name: { en: 'Hammer Curls', ar: 'تمارين الهامر' },
+              sets: 3, reps: '12', rest: 60,
+              desc: { 
+                en: 'Palms facing each other, controlled movement',
+                ar: 'الكفوف مواجهة لبعضها، حركة محكمة'
+              },
+              warmup: {
+                en: '1 set of 15 reps with light dumbbells',
+                ar: 'مجموعة واحدة 15 تكرار بدمبيلز خفيفة'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Wednesday - Legs', ar: 'الأربعاء - الأرجل' },
+          exercises: [
+            { 
+              name: { en: 'Barbell Squats', ar: 'القرفصاء بالبار' },
+              sets: 4, reps: '8-10', rest: 150,
+              desc: { 
+                en: 'Feet shoulder-width apart, descend until thighs parallel to floor',
+                ar: 'القدمين بعرض الكتفين، الهبوط حتى تكون الفخذين موازية للأرض'
+              },
+              warmup: {
+                en: '3 ramp-up sets: 12 reps empty bar, 8 reps @30%, 5 reps @50% working weight',
+                ar: '3 مجموعات تصاعدية: 12 تكرار بدون وزن، 8 تكرار بـ30%، 5 تكرار بـ50% من وزن التمرين'
+              }
+            },
+            { 
+              name: { en: 'Romanian Deadlifts', ar: 'الرفعة الرومانية' },
+              sets: 3, reps: '10-12', rest: 120,
+              desc: { 
+                en: 'Slight knee bend, focus on hamstring stretch',
+                ar: 'ثني خفيف في الركبة، التركيز على شد أوتار الركبة'
+              },
+              warmup: {
+                en: '2 sets of 12 reps with light weight',
+                ar: 'مجموعتان 12 تكرار بوزن خفيف'
+              }
+            },
+            { 
+              name: { en: 'Leg Press', ar: 'ضغط الساق' },
+              sets: 3, reps: '12-15', rest: 90,
+              desc: { 
+                en: 'Feet low and close for quads emphasis',
+                ar: 'القدمين منخفضتين وقريبتين للتركيز على عضلات الفخذ الأمامية'
+              },
+              warmup: {
+                en: '2 sets of 15 reps with 40% working weight',
+                ar: 'مجموعتان 15 تكرار بـ40% من وزن التمرين'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Thursday - Shoulders/Traps', ar: 'الخميس - الكتفين/الترابيس' },
+          exercises: [
+            { 
+              name: { en: 'Overhead Press', ar: 'الضغط من فوق الرأس' },
+              sets: 4, reps: '8-10', rest: 120,
+              desc: { 
+                en: 'Bar path should clear chin, lockout overhead',
+                ar: 'مسار البار يجب أن يتجاوز الذقن، قفل في الأعلى'
+              },
+              warmup: {
+                en: '3 ramp-up sets: 10, 8, 6 reps with increasing weight',
+                ar: '3 مجموعات تصاعدية: 10، 8، 6 تكرار بزيادة الوزن'
+              }
+            },
+            { 
+              name: { en: 'Lateral Raises', ar: 'رفع الجانبي' },
+              sets: 3, reps: '15-20', rest: 60,
+              desc: { 
+                en: 'Slight bend in elbows, raise to shoulder height',
+                ar: 'ثني خفيف في المرفقين، الرفع حتى مستوى الكتف'
+              },
+              warmup: {
+                en: '1 set of 20 reps with very light weight',
+                ar: 'مجموعة واحدة 20 تكرار بوزن خفيف جداً'
+              }
+            },
+            { 
+              name: { en: 'Shrugs', ar: 'تمارين الرفع' },
+              sets: 3, reps: '12-15', rest: 60,
+              desc: { 
+                en: 'Full range motion, squeeze traps at top',
+                ar: 'مدى حركة كامل، شد العضلات في الأعلى'
+              },
+              warmup: {
+                en: '1 set of 15 reps with light weight',
+                ar: 'مجموعة واحدة 15 تكرار بوزن خفيف'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Friday - Arms/Abs', ar: 'الجمعة - الذراعين/البطن' },
+          exercises: [
+            { 
+              name: { en: 'Close-grip Bench Press', ar: 'الضغط بمسافة يدين ضيقة' },
+              sets: 3, reps: '10-12', rest: 90,
+              desc: { 
+                en: 'Hands shoulder-width apart for triceps emphasis',
+                ar: 'اليدين بعرض الكتفين للتركيز على ثلاثية الرؤوس'
+              },
+              warmup: {
+                en: '2 sets of 10 reps with 50% working weight',
+                ar: 'مجموعتان 10 تكرار بـ50% من وزن التمرين'
+              }
+            },
+            { 
+              name: { en: 'Preacher Curls', ar: 'تمارين الذراع على مقعد' },
+              sets: 3, reps: '10-12', rest: 60,
+              desc: { 
+                en: 'Full stretch at bottom, squeeze at top',
+                ar: 'تمدد كامل في الأسفل، شد في الأعلى'
+              },
+              warmup: {
+                en: '1 set of 12 reps with light weight',
+                ar: 'مجموعة واحدة 12 تكرار بوزن خفيف'
+              }
+            },
+            { 
+              name: { en: 'Hanging Leg Raises', ar: 'رفع الساقين المعلقة' },
+              sets: 3, reps: '15', rest: 60,
+              desc: { 
+                en: 'No swing, lift knees to chest with control',
+                ar: 'بدون تحريك، رفع الركبتين إلى الصدر بتحكم'
+              },
+              warmup: {
+                en: '2 sets of 10 reps with bent knees',
+                ar: 'مجموعتان 10 تكرار مع ثني الركبتين'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Saturday - Cardio/Recovery', ar: 'السبت - كارديو/تعافي' },
+          exercises: [
+            { 
+              name: { en: 'Steady State Cardio', ar: 'كارديو ثابت' },
+              sets: 1, reps: '30-45 minutes', rest: 0,
+              desc: { 
+                en: 'Maintain 60-70% max heart rate throughout',
+                ar: 'المحافظة على 60-70% من أقصى معدل ضربات القلب طوال الوقت'
+              },
+              warmup: {
+                en: '5 minutes easy pace before starting',
+                ar: '5 دقائق بخطى سهلة قبل البدء'
+              }
+            },
+            { 
+              name: { en: 'Foam Rolling', ar: 'التدليك بالاسفنج' },
+              sets: 1, reps: '10 minutes', rest: 0,
+              desc: { 
+                en: 'Focus on quads, hamstrings, glutes, back, and chest',
+                ar: 'التركيز على عضلات الفخذ الأمامية، أوتار الركبة، الألوية، الظهر، والصدر'
+              },
+              warmup: {
+                en: 'None required',
+                ar: 'غير مطلوب'
+              }
+            }
+          ]
+        },
+        {
+          day: { en: 'Sunday - Rest', ar: 'الأحد - راحة' },
+          exercises: [
+            { 
+              name: { en: 'Active Recovery', ar: 'تعافي نشط' },
+              sets: 1, reps: 'Light activity or complete rest', rest: 0,
+              desc: { 
+                en: 'Prioritize sleep and hydration for muscle repair',
+                ar: 'إعطاء الأولوية للنوم والترطيب لإصلاح العضلات'
+              },
+              warmup: {
+                en: 'None required',
+                ar: 'غير مطلوب'
+              }
+            }
+          ]
+        }
+      ],
+      
+      cutting: [
+        {
+          day: { en: 'Monday - Chest/Triceps/HIIT', ar: 'الاثنين - الصدر/ثلاثية الرؤوس/HIIT' },
+          exercises: [
+            { 
+              name: { en: 'Incline Dumbbell Press', ar: 'الضغط بالدمبلز على مقعد مائل' },
+              sets: 3, reps: '12-15', rest: 60,
+              desc: { 
+                en: 'Controlled eccentric phase for maximum time under tension',
+                ar: 'المرحلة السلبية مضبوطة لأقصى وقت تحت التوتر'
+              },
+              warmup: {
+                en: '2 sets of 15 reps with light weight',
+                ar: 'مجموعتان 15 تكرار بوزن خفيف'
+              }
+            },
+            { 
+              name: { en: 'Cable Flyes', ar: 'تمارين الصدر بالكابل' },
+              sets: 3, reps: '15-20', rest: 45,
+              desc: { 
+                en: 'Slight bend in elbows, squeeze chest at peak contraction',
+                ar: 'ثني خفيف في المرفقين، شد الصدر في انقباض الذروة'
+              },
+              warmup: {
+                en: '1 set of 20 reps with very light weight',
+                ar: 'مجموعة واحدة 20 تكرار بوزن خفيف جداً'
+              }
+            },
+            { 
+              name: { en: 'Overhead Triceps Extension', ar: 'تمديد ثلاثية الرؤوس من فوق الرأس' },
+              sets: 3, reps: '15', rest: 45,
+              desc: { 
+                en: 'Keep elbows in fixed position, only forearms move',
+                ar: 'إبقاء المرفقين في مكان ثابت، تحريك الساعدين فقط'
+              },
+              warmup: {
+                en: '1 set of 15 reps with light weight',
+                ar: 'مجموعة واحدة 15 تكرار بوزن خفيف'
+              }
+            },
+            { 
+              name: { en: 'HIIT Sprints', ar: 'سprints عالية الكثافة' },
+              sets: 8, reps: '20s sprint/40s rest', rest: 0,
+              desc: { 
+                en: 'All-out effort during sprint intervals',
+                ar: 'جهد كامل خلال فترات السباق'
+              },
+              warmup: {
+                en: '5 minutes light jogging before starting',
+                ar: '5 دقائق ركض خفيف قبل البدء'
+              }
+            }
+          ]
+        }
+      ],
+      
+      homeWorkout: [
+        {
+          day: { en: 'Full Body Home Routine', ar: 'روتين كامل للجسم في المنزل' },
+          exercises: [
+            { 
+              name: { en: 'Push-ups', ar: 'تمارين الضغط' },
+              sets: 4, reps: 'Max', rest: 60,
+              desc: { 
+                en: 'Keep body straight from head to heels',
+                ar: 'حافظ على جسمك مستقيماً من الرأس إلى الكعبين'
+              },
+              warmup: {
+                en: '2 sets of 10-15 reps with knees on ground if needed',
+                ar: 'مجموعتان 10-15 تكرار مع وضع الركبتين على الأرض إذا لزم الأمر'
+              }
+            },
+            { 
+              name: { en: 'Chair Dips', ar: 'الغطس على الكرسي' },
+              sets: 3, reps: '12-15', rest: 45,
+              desc: { 
+                en: 'Use sturdy chair, lower slowly',
+                ar: 'استخدم كرسياً ثابتاً، انزل ببطء'
+              },
+              warmup: {
+                en: '1 set of 10 reps with partial range of motion',
+                ar: 'مجموعة واحدة 10 تكرار بمدى حركة جزئي'
+              }
+            },
+            { 
+              name: { en: 'Bodyweight Squats', ar: 'القرفصاء بدون أوزان' },
+              sets: 4, reps: '20', rest: 60,
+              desc: { 
+                en: 'Feet shoulder-width apart, chest up',
+                ar: 'القدمين بعرض الكتفين، الصدر مرفوع'
+              },
+              warmup: {
+                en: '2 sets of 15 reps at slow tempo',
+                ar: 'مجموعتان 15 تكرار بإيقاع بطيء'
+              }
+            },
+            { 
+              name: { en: 'Plank', ar: 'اللوح الخشبي' },
+              sets: 3, reps: '45s hold', rest: 30,
+              desc: { 
+                en: 'Engage core, don\'t let hips sag',
+                ar: 'شغّل عضلات البطن، لا تدع الوركين ينزلان'
+              },
+              warmup: {
+                en: '1 set of 20s hold',
+                ar: 'مجموعة واحدة 20 ثانية ثبات'
+              }
+            },
+            { 
+              name: { en: 'Lunges', ar: 'الخطوات الأمامية' },
+              sets: 3, reps: '15 per leg', rest: 45,
+              desc: { 
+                en: 'Front knee at 90 degrees, don\'t let it go past toes',
+                ar: 'الركبة الأمامية عند 90 درجة، لا تدعها تتعدى أصابع القدم'
+              },
+              warmup: {
+                en: '1 set of 10 per leg with no weight',
+                ar: 'مجموعة واحدة 10 لكل ساق بدون وزن'
+              }
+            },
+            { 
+              name: { en: 'Superman', ar: 'تمرين السوبرمان' },
+              sets: 3, reps: '15', rest: 30,
+              desc: { 
+                en: 'Lift chest and legs off ground simultaneously',
+                ar: 'رفع الصدر والساقين عن الأرض في نفس الوقت'
+              },
+              warmup: {
+                en: '1 set of 10 reps with partial range',
+                ar: 'مجموعة واحدة 10 تكرار بمدى حركة جزئي'
+              }
+            }
+          ]
+        }
+      ]
+    },
+    
+    warmupRoutines: {
+      general: [
+        {
+          title: { en: 'General Warm-up (5-10 minutes)', ar: 'إحماء عام (5-10 دقائق)' },
+          steps: [
+            { 
+              en: 'Light cardio: jogging in place, jumping jacks, or brisk walking', 
+              ar: 'كارديو خفيف: الركض في المكان، القفز مع فتح الذراعين والساقين، أو المشي السريع'
+            },
+            { 
+              en: 'Dynamic stretching: arm circles, leg swings, torso twists', 
+              ar: 'إطالة ديناميكية: تحريك الذراعين في دوائر، تأرجح الساقين، لف الجذع'
+            },
+            { 
+              en: 'Joint mobility: ankle circles, wrist rotations, neck rolls', 
+              ar: 'مرونة المفاصل: تحريك الكاحلين في دوائر، تدوير المعصم، تحريك الرقبة'
+            },
+            { 
+              en: 'Sport-specific movements at 50% intensity', 
+              ar: 'حركات خاصة بالرياضة بنسبة 50% من الشدة'
+            }
+          ]
+        }
+      ],
+      strength: [
+        {
+          title: { en: 'Strength Training Warm-up (10-15 minutes)', ar: 'إحماء تدريب القوة (10-15 دقائق)' },
+          steps: [
+            { 
+              en: '5 minutes light cardio to increase core temperature', 
+              ar: '5 دقائق كارديو خفيف لزيادة درجة حرارة الجسم الأساسية'
+            },
+            { 
+              en: 'Foam rolling of major muscle groups (quads, hamstrings, glutes, back)', 
+              ar: 'التدليك بالاسفنج لمجموعات العضلات الرئيسية (الفخذ الأمامي، أوتار الركبة، الألوية، الظهر)'
+            },
+            { 
+              en: 'Activation exercises: glute bridges, band walks, plank holds', 
+              ar: 'تمارين التنشيط: جسور الألوية، المشي بالرباط، ثبات اللوح الخشبي'
+            },
+            { 
+              en: 'Ramp-up sets for first compound exercise (start light, gradually increase weight)', 
+              ar: 'مجموعات تصاعدية للتمرين المركب الأول (البدء بوزن خفيف، ثم زيادة الوزن تدريجياً)'
+            }
+          ]
+        }
+      ]
+    },
+    
+    nutrition: {
+      preWorkout: [
+        {
+          title: { en: 'Pre-Workout Nutrition (1-2 hours before)', ar: 'التغذية قبل التمرين (1-2 ساعة قبل)' },
+          items: [
+            { 
+              en: 'Complex carbohydrates: oats, brown rice, sweet potatoes', 
+              ar: 'كربوهيدرات معقدة: الشوفان، الأرز البني، البطاطا الحلوة'
+            },
+            { 
+              en: 'Lean protein: chicken breast, fish, whey protein', 
+              ar: 'بروتين قليل الدهون: صدر الدجاج، السمك، بروتين مصل اللبن'
+            },
+            { 
+              en: 'Small amount of healthy fats: nuts, avocado (avoid large amounts)', 
+              ar: 'كمية صغيرة من الدهون الصحية: المكسرات، الأفوكادو (تجنب الكميات الكبيرة)'
+            },
+            { 
+              en: 'Hydration: 16-20 oz water with electrolytes if needed', 
+              ar: 'الترطيب: 16-20 أوقية ماء مع إلكتروليتات إذا لزم الأمر'
+            }
+          ]
+        },
+        {
+          title: { en: 'Quick Pre-Workout (30 minutes before)', ar: 'وجبة سريعة قبل التمرين (30 دقيقة قبل)' },
+          items: [
+            { 
+              en: 'Simple carbohydrates for quick energy: banana, apple, dates', 
+              ar: 'كربوهيدرات بسيطة للطاقة السريعة: موز، تفاح، تمر'
+            },
+            { 
+              en: 'Small protein portion: protein shake, Greek yogurt', 
+              ar: ' portion بروتين صغيرة: مشروب بروتين، لبن زبادي يوناني'
+            },
+            { 
+              en: 'Caffeine (optional): 100-200mg if tolerated', 
+              ar: 'الكافيين (اختياري): 100-200 مليغرام إذا تم تحمله'
+            }
+          ]
+        }
+      ],
+      postWorkout: [
+        {
+          title: { en: 'Post-Workout Nutrition (within 45 minutes)', ar: 'التغذية بعد التمرين (في غضون 45 دقيقة)' },
+          items: [
+            { 
+              en: 'Fast-absorbing protein: whey protein, lean chicken, fish', 
+              ar: 'بروتين سريع الامتصاص: بروتين مصل اللبن، دجاج خالي من الدهون، سمك'
+            },
+            { 
+              en: 'High glycemic index carbs to replenish glycogen: white rice, potatoes, dextrose', 
+              ar: 'كربوهيدرات عالية المؤشر الجلايسيمي لإعادة ملء الجلايكوجين: الأرز الأبيض، البطاطس، دكستروز'
+            },
+            { 
+              en: 'Electrolytes: coconut water, sports drink, or electrolyte supplement', 
+              ar: 'الإلكتروليتات: ماء جوز الهند، مشروب رياضي، أو مكمل إلكتروليتات'
+            },
+            { 
+              en: 'Anti-inflammatory foods: berries, leafy greens, turmeric', 
+              ar: 'أطعمة مضادة للالتهاب: التوت، الخضروات الورقية، الكركم'
+            }
+          ]
+        }
+      ]
+    },
+    
+    fasting: [
+      {
+        title: { en: 'Training During Fasting', ar: 'التمرين أثناء الصيام' },
+        content: {
+          en: 'Training in a fasted state can enhance fat burning through increased lipolysis and growth hormone secretion. However, for sessions longer than 60 minutes or high-intensity workouts, performance may suffer without pre-workout nutrition.',
+          ar: 'التمرين في حالة الصيام يمكن أن يعزز حرق الدهون من خلال زيادة تكسير الدهون وإفراز هرمون النمو. ومع ذلك، للجلسات التي تزيد عن 60 دقيقة أو التمارين عالية الكثافة، قد يعاني الأداء بدون تغذية قبل التمرين.'
+        },
+        guidelines: [
+          { 
+            en: 'Best for: Low to moderate intensity cardio, light resistance training', 
+            ar: 'الأفضل لـ: كارديو منخفض إلى متوسط الشدة، تدريب مقاومة خفيف'
+          },
+          { 
+            en: 'Avoid: Heavy strength training, HIIT sessions longer than 30 minutes', 
+            ar: 'تجنب: تدريب القوة الشديد، جلسات HIIT أطول من 30 دقيقة'
+          },
+          { 
+            en: 'Hydration: Electrolyte supplementation is crucial during fasted training', 
+            ar: 'الترطيب: تكميل الإليكترولايت ضروري أثناء التمرين في حالة الصيام'
+          },
+          { 
+            en: 'Timing: Train at the beginning of your fasting window for best results', 
+            ar: 'التوقيت: التمرين في بداية فترة الصيام لأفضل النتائج'
+          }
+        ],
+        references: [
+          { 
+            en: 'Van Proeyen et al. (2010). Training in the fasted state improves glucose tolerance during high-fat diet.', 
+            ar: 'فان بروين وآخرون (2010). التدريب في حالة الصيام يحسن تحمل الجلوكوز أثناء اتباع نظام غذائي عالي الدهون.'
+          },
+          { 
+            en: 'Hackett & Haghi (2022). The effect of fasted-state exercise on appetite-regulating hormones.', 
+            ar: 'هاكيت وهاغي (2022). تأثير التمرين في حالة الصيام على هرمونات تنظيم الشهية.'
+          }
+        ]
+      },
+      {
+        title: { en: 'Biological Mechanisms', ar: 'الآليات البيولوجية' },
+        content: {
+          en: 'Fasted training increases AMPK activation and fatty acid oxidation while decreasing insulin levels. This metabolic shift enhances mitochondrial biogenesis and improves insulin sensitivity long-term. However, mTOR signaling (crucial for muscle growth) may be blunted without amino acid availability.',
+          ar: 'التدريب في حالة الصيام يزيد من تنشيط AMPK وأكسدة الأحماض الدهنية مع تقليل مستويات الأنسولين. هذا التحول الأيضي يعزز تكوين الميتوكوندريا ويحسن حساسية الأنسولين على المدى الطويل. ومع ذلك، قد يتم إضعاف إشارات mTOR (الضرورية لنمو العضلات) بدون توفر الأحماض الأمينية.'
+        },
+        guidelines: [
+          { 
+            en: 'Protein timing: Ensure adequate protein intake during feeding windows to support muscle protein synthesis', 
+            ar: 'توقيت البروتين: التأكد من تناول كمية كافية من البروتين خلال فترات الأكل لدعم تخليق بروتين العضلات'
+          },
+          { 
+            en: 'Adaptation period: Allow 2-3 weeks for your body to adapt to fasted training', 
+            ar: 'فترة التكيف: السماح بـ2-3 أسابيع لكي يتكيف جسمك مع التمرين في حالة الصيام'
+          },
+          { 
+            en: 'Listen to your body: Discontinue fasted training if experiencing dizziness, extreme fatigue, or poor recovery', 
+            ar: 'الاستماع لجسمك: التوقف عن التمرين في حالة الصيام إذا كنت تعاني من الدوخة، التعب الشديد، أو التعافي السيء'
+          }
+        ],
+        references: [
+          { 
+            en: 'Moro et al. (2016). Effects of eight weeks of time-restricted feeding on basal metabolism and body composition.', 
+            ar: 'مورا وآخرون (2016). تأثيرات ثمانية أسابيع من الصيام المقيد زمنياً على الأيض الأساسي وت composition الجسم.'
+          },
+          { 
+            en: 'Tinsley et al. (2019). Time-restricted feeding plus resistance training in active females.', 
+            ar: 'تينسلي وآخرون (2019). الصيام المقيد زمنياً بالإضافة إلى تدريب المقاومة في الإناث النشيطات.'
+          }
+        ]
+      }
+    ],
+    
+    proTips: [
+      {
+        title: { en: 'Nutrient Timing', ar: 'توقيت المغذيات' },
+        desc: { 
+          en: 'Consume 20-40g protein within 2h post-workout for optimal recovery.',
+          ar: 'تناول 20-40غ بروتين خلال ساعتين بعد التمرين للتعافي الأمثل.'
+        }
+      },
+      {
+        title: { en: 'Tempo Training', ar: 'تدريب الإيقاع' },
+        desc: { 
+          en: 'Use 3-1-2 tempo (eccentric-pause-concentric) for better hypertrophy.',
+          ar: 'استخدم إيقاع 3-1-2 (تحمل-توقف-رفع) لبناء عضلات أفضل.'
+        }
+      },
+      {
+        title: { en: 'Mind-Muscle Connection', ar: 'اتصال العقل-العضلة' },
+        desc: { 
+          en: 'Focus on target muscle contraction. Quality over quantity.',
+          ar: 'ركز على انقباض العضلة المستهدفة. الجودة أهم من الكمية.'
+        }
+      },
+      {
+        title: { en: 'Progressive Overload', ar: 'الزيادة التدريجية' },
+        desc: { 
+          en: 'Increase weight, reps, or sets weekly to force adaptation.',
+          ar: 'زد الوزن، التكرارات، أو المجموعات أسبوعياً لإجبار التكيف.'
+        }
+      },
+      {
+        title: { en: 'Sleep Quality', ar: 'جودة النوم' },
+        desc: { 
+          en: '7-9 hours of quality sleep is essential for hormone regulation and recovery.',
+          ar: '7-9 ساعات من النوم الجيد ضرورية لتنظيم الهرمونات والتعافي.'
+        }
+      },
+      {
+        title: { en: 'Deload Weeks', ar: 'أسابيع التخفيف' },
+        desc: { 
+          en: 'Every 6-8 weeks, reduce training volume by 40-60% to prevent overtraining.',
+          ar: 'كل 6-8 أسابيع، قلل حجم التدريب بمقدار 40-60% لمنع الإفراط في التدريب.'
+        }
+      }
+    ],
+    
+    timerInstructions: {
+      title: { en: 'Timer Usage Guide', ar: 'دليل استخدام المؤقت' },
+      steps: [
+        {
+          title: { en: 'Set Duration', ar: 'ضبط المدة' },
+          desc: { 
+            en: 'Enter minutes and seconds for your work or rest periods. For most exercises, 30-90 seconds rest is optimal.',
+            ar: 'أدخل الدقائق والثواني لفترات العمل أو الراحة. لمعظم التمارين، راحة 30-90 ثانية مثالية.'
+          }
+        },
+        {
+          title: { en: 'Start/Pause', ar: 'بدء/إيقاف مؤقت' },
+          desc: { 
+            en: 'Press the Start button to begin timing. Use Pause to temporarily stop the timer without resetting.',
+            ar: 'اضغط على زر البدء لبدء المؤقت. استخدم الإيقاف المؤقت لإيقاف المؤقت مؤقتاً دون إعادة الضبط.'
+          }
+        },
+        {
+          title: { en: 'Reset Timer', ar: 'إعادة ضبط المؤقت' },
+          desc: { 
+            en: 'Press Reset to clear the current time and start fresh for the next exercise or rest period.',
+            ar: 'اضغط على إعادة الضبط لمسح الوقت الحالي والبدء من جديد للتمرين أو فترة الراحة التالية.'
+          }
+        },
+        {
+          title: { en: 'Rest Period Alert', ar: 'تنبيه فترة الراحة' },
+          desc: { 
+            en: 'When the timer reaches zero during rest periods, you\'ll receive an alert to begin your next set.',
+            ar: 'عندما يصل المؤقت إلى الصفر أثناء فترات الراحة، ستتلقى تنبيهاً لبدء المجموعة التالية.'
+          }
+        },
+        {
+          title: { en: 'Exercise Sets', ar: 'مجموعات التمرين' },
+          desc: { 
+            en: 'For timing your exercise duration (e.g., planks, wall sits), set the timer before starting the movement.',
+            ar: 'لتوقيت مدة التمرين (على سبيل المثال، اللوح الخشبي، الجلوس على الحائط)، قم بضبط المؤقت قبل بدء الحركة.'
+          }
+        }
+      ]
+    }
+  };
+
+  // Handle exercise selection to show pre-exercise modal
+  const handleExerciseSelect = (exercise) => {
+    setActiveExercise(exercise);
+    setShowPreExerciseModal(true);
+    
+    // Auto-set rest timer based on exercise
+    resetTimer(0, exercise.rest);
+  };
+
+  // Language toggle handler
+  const toggleLanguage = (lang) => {
+    setLanguage(lang);
+  };
+
+  return (
+    <div className={`min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 transition-colors duration-300 ${language === 'ar' ? 'font-arabic' : 'font-sans'}`}>
+      {/* Header with logo and language toggle */}
+      <header className="py-6 px-4 sm:px-6 lg:px-8 border-b border-gray-700">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center justify-center sm:justify-start mb-4 sm:mb-0">
+            <Dumbbell className="h-10 w-10 text-indigo-400 mr-3" />
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-300">
+              workouts.promedic1
+            </h1>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="flex items-center bg-gray-800 rounded-full p-1">
+              <button 
+                onClick={() => toggleLanguage('en')}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  language === 'en' 
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' 
+                    : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                EN
+              </button>
+              <button 
+                onClick={() => toggleLanguage('both')}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  language === 'both' 
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' 
+                    : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <Languages className="h-4 w-4" />
+              </button>
+              <button 
+                onClick={() => toggleLanguage('ar')}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  language === 'ar' 
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' 
+                    : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                AR
+              </button>
+            </div>
+            
+            <p className="text-gray-300 text-center sm:text-left max-w-md">
+              {t({ 
+                en: 'Professional training strategies for every body type and fitness level',
+                ar: 'استراتيجيات تدريب احترافية لكل نوع جسم ومستوى لياقة'
+              })}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Workout Timer Card */}
+          <div className={`bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden transition-all duration-300 ${expandedCards.timer ? 'lg:col-span-2' : ''}`}>
+            <button 
+              onClick={() => toggleCard('timer')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-indigo-900/70 to-purple-900/70 hover:bg-gradient-to-r hover:from-indigo-800/70 hover:to-purple-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-indigo-500/20 p-3 rounded-xl mr-4">
+                  <Timer className="h-6 w-6 text-indigo-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Workout Timer', ar: 'مؤقت التمرين' })}</h2>
+              </div>
+              {expandedCards.timer ? (
+                <ChevronUp className="h-5 w-5 text-indigo-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-indigo-300" />
+              )}
+            </button>
+            
+            {expandedCards.timer && (
+              <div className="p-6">
+                <div className="text-center">
+                  <div className="text-5xl font-mono font-bold mb-8 text-indigo-300">
+                    {String(timer.minutes).padStart(2, '0')}:{String(timer.seconds).padStart(2, '0')}
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8 max-w-md mx-auto">
+                    <div className="flex-1">
+                      <label className="block text-sm text-gray-300 mb-1">{t({ en: 'Minutes', ar: 'دقائق' })}</label>
+                      <input
+                        type="number"
+                        value={timer.minutes}
+                        onChange={(e) => setTimer(prev => ({ ...prev, minutes: Math.max(0, parseInt(e.target.value) || 0) }))}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-center text-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        min="0"
+                        max="99"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm text-gray-300 mb-1">{t({ en: 'Seconds', ar: 'ثواني' })}</label>
+                      <input
+                        type="number"
+                        value={timer.seconds}
+                        onChange={(e) => setTimer(prev => ({ ...prev, seconds: Math.min(59, Math.max(0, parseInt(e.target.value) || 0)) }))}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-center text-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        min="0"
+                        max="59"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap justify-center gap-3 mb-8">
+                    <button
+                      onClick={startTimer}
+                      disabled={timer.isRunning || (timer.minutes === 0 && timer.seconds === 0)}
+                      className="flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <span className="mr-2">{timer.isRunning ? t({ en: 'Running', ar: 'قيد التشغيل' }) : t({ en: 'Start', ar: 'ابدأ' })}</span>
+                      {timer.isRunning ? (
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse ml-2" />
+                      ) : (
+                        <Play className="h-4 w-4 ml-2" />
+                      )}
+                    </button>
+                    <button
+                      onClick={pauseTimer}
+                      disabled={!timer.isRunning}
+                      className="flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <Pause className="h-4 w-4 mr-2" />
+                      {t({ en: 'Pause', ar: 'إيقاف مؤقت' })}
+                    </button>
+                    <button
+                      onClick={() => resetTimer()}
+                      className="flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      {t({ en: 'Reset', ar: 'إعادة تعيين' })}
+                    </button>
+                  </div>
+                  
+                  {/* Timer Instructions */}
+                  <div className="mt-6 bg-gray-900/50 rounded-xl p-5 border border-gray-700">
+                    <div className="flex items-start">
+                      <Info className="h-5 w-5 text-indigo-400 mt-0.5 mr-3 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-bold text-indigo-300 mb-2">{t(workoutData.timerInstructions.title)}</h3>
+                        <div className="space-y-3">
+                          {workoutData.timerInstructions.steps.map((step, index) => (
+                            <div key={index} className="border-l-2 border-indigo-500 pl-3 py-1">
+                              <h4 className="font-medium text-gray-200">{t(step.title)}</h4>
+                              <p className="text-gray-400 text-sm">{t(step.desc)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {activeTimer === 'rest' && (
+                    <div className="mt-4 p-4 bg-indigo-900/30 rounded-lg border border-indigo-500/30">
+                      <p className="text-indigo-200 font-medium">
+                        {t({ en: 'Rest Period Active', ar: 'فترة الراحة نشطة' })}
+                      </p>
+                      <p className="text-sm text-gray-300 mt-1">
+                        {t({ 
+                          en: 'Get ready for your next set when timer reaches zero',
+                          ar: 'استعد للمجموعة التالية عندما يصل المؤقت إلى الصفر'
+                        })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Training Goals Card */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden">
+            <button 
+              onClick={() => toggleCard('goals')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-emerald-900/70 to-cyan-900/70 hover:bg-gradient-to-r hover:from-emerald-800/70 hover:to-cyan-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-emerald-500/20 p-3 rounded-xl mr-4">
+                  <Target className="h-6 w-6 text-emerald-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Training Goals', ar: 'أهداف التدريب' })}</h2>
+              </div>
+              {expandedCards.goals ? (
+                <ChevronUp className="h-5 w-5 text-emerald-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-emerald-300" />
+              )}
+            </button>
+            
+            {expandedCards.goals && (
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {workoutData.goals.map((goal) => (
+                    <div 
+                      key={goal.id}
+                      className={`p-5 rounded-xl border cursor-pointer transition-all ${
+                        workoutMode === goal.id 
+                          ? 'border-emerald-500 bg-emerald-900/20' 
+                          : 'border-gray-700 hover:border-emerald-500/50'
+                      }`}
+                      onClick={() => setWorkoutMode(goal.id)}
+                    >
+                      <h3 className="text-lg font-bold text-emerald-300 mb-2">{t(goal.title)}</h3>
+                      <p className="text-gray-300 mb-2 text-sm">{t(goal.desc)}</p>
+                      <p className="text-cyan-200 font-medium text-sm mb-3">{t(goal.plan)}</p>
+                      
+                      <div className="mt-3 pt-3 border-t border-gray-700">
+                        <p className="text-sm text-gray-400 mb-2">{t({ en: 'Sample Exercises:', ar: 'تمارين نموذجية:' })}</p>
+                        <ul className="space-y-1 text-sm">
+                          {goal.exercises.slice(0, 3).map((exercise, idx) => (
+                            <li key={idx} className="flex items-center">
+                              <CheckCircle className="h-4 w-4 text-emerald-400 mr-2 flex-shrink-0" />
+                              <span className="text-gray-200">{t(exercise.name)} ({exercise.sets}×{exercise.reps})</span>
+                            </li>
+                          ))}
+                          {goal.exercises.length > 3 && (
+                            <li className="text-xs text-indigo-300 mt-1">
+                              {t({ en: `+ ${goal.exercises.length - 3} more exercises`, ar: `+ ${goal.exercises.length - 3} تمارين إضافية` })}
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 pt-6 border-t border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                    <Flame className="h-5 w-5 text-amber-400 mr-2" />
+                    {t({ en: 'Workout Plans Library', ar: 'مكتبة خطط التمرين' })}
+                  </h3>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {['bulking', 'cutting', 'queenShape', 'fatBurn', 'strength', 'endurance', 'homeWorkout', 'mature'].map((plan) => (
+                      <button
+                        key={plan}
+                        onClick={() => setActivePlan(plan)}
+                        className={`p-3 rounded-lg text-center text-sm font-medium transition-all ${
+                          activePlan === plan
+                            ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                      >
+                        {t({
+                          en: plan === 'bulking' ? 'Bulking' : 
+                             plan === 'cutting' ? 'Cutting' : 
+                             plan === 'queenShape' ? 'Queen Shape' : 
+                             plan === 'fatBurn' ? 'Fat Burn' :
+                             plan === 'strength' ? 'Strength' :
+                             plan === 'endurance' ? 'Endurance' :
+                             plan === 'homeWorkout' ? 'Home' : 'Mature',
+                          ar: plan === 'bulking' ? 'تضخيم' : 
+                              plan === 'cutting' ? 'تجفيف' : 
+                              plan === 'queenShape' ? 'قوام ملكي' : 
+                              plan === 'fatBurn' ? 'حرق دهون' :
+                              plan === 'strength' ? 'قوة' :
+                              plan === 'endurance' ? 'تحمل' :
+                              plan === 'homeWorkout' ? 'تمارين منزلية' : 'رياضي ناضج'
+                        })}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Full Week Plan Card */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden">
+            <button 
+              onClick={() => toggleCard('fullWeek')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-amber-900/70 to-orange-900/70 hover:bg-gradient-to-r hover:from-amber-800/70 hover:to-orange-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-amber-500/20 p-3 rounded-xl mr-4">
+                  <Calendar className="h-6 w-6 text-amber-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Full Week Plan', ar: 'خطة الأسبوع الكامل' })}</h2>
+              </div>
+              {expandedCards.fullWeek ? (
+                <ChevronUp className="h-5 w-5 text-amber-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-amber-300" />
+              )}
+            </button>
+            
+            {expandedCards.fullWeek && (
+              <div className="p-6">
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <button
+                    onClick={() => setWorkoutMode('bulking')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      workoutMode === 'bulking'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {t({ en: 'Bulking', ar: 'تضخيم' })}
+                  </button>
+                  <button
+                    onClick={() => setWorkoutMode('cutting')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      workoutMode === 'cutting'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {t({ en: 'Cutting', ar: 'تجفيف' })}
+                  </button>
+                  <button
+                    onClick={() => setWorkoutMode('homeWorkout')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      workoutMode === 'homeWorkout'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {t({ en: 'Home Workout', ar: 'تمارين منزلية' })}
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {(workoutMode === 'homeWorkout' 
+                    ? workoutData.fullWeekPlans.homeWorkout 
+                    : workoutMode === 'cutting'
+                      ? workoutData.fullWeekPlans.cutting
+                      : workoutData.fullWeekPlans.bulking
+                  ).map((day, index) => (
+                    <div key={index} className="bg-gray-900/50 rounded-xl p-5 border border-gray-700">
+                      <h3 className="text-xl font-bold text-amber-300 mb-4">{t(day.day)}</h3>
+                      
+                      <div className="space-y-4">
+                        {day.exercises.map((exercise, exIndex) => (
+                          <div 
+                            key={exIndex} 
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-amber-500/50 transition-all cursor-pointer"
+                            onClick={() => handleExerciseSelect(exercise)}
+                          >
+                            <div className="mb-3 sm:mb-0">
+                              <h4 className="font-bold text-lg text-cyan-300">{t(exercise.name)}</h4>
+                              <p className="text-gray-300 text-sm mt-1">{t(exercise.desc)}</p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <span className="px-2 py-1 bg-indigo-900/50 text-indigo-200 rounded text-xs font-medium">
+                                  {t({ en: 'Sets', ar: 'مجموعات' })}: {exercise.sets}
+                                </span>
+                                <span className="px-2 py-1 bg-emerald-900/50 text-emerald-200 rounded text-xs font-medium">
+                                  {t({ en: 'Reps', ar: 'تكرارات' })}: {exercise.reps}
+                                </span>
+                                <span className="px-2 py-1 bg-amber-900/50 text-amber-200 rounded text-xs font-medium">
+                                  {t({ en: 'Rest', ar: 'راحة' })}: {exercise.rest}s
+                                </span>
+                              </div>
+                              <div className="mt-2 flex items-center text-xs text-gray-400">
+                                <Activity className="h-3 w-3 mr-1" />
+                                <span>{t({ en: 'Warm-up:', ar: 'إحماء:' })} {t(exercise.warmup)}</span>
+                              </div>
+                            </div>
+                            
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setRestTimer(exercise.rest);
+                              }}
+                              className="mt-2 sm:mt-0 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all flex items-center justify-center"
+                            >
+                              <Timer className="h-4 w-4 mr-2" />
+                              {t({ en: 'Set Timer', ar: 'ضبط المؤقت' })}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Warm-up Routines Card */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden">
+            <button 
+              onClick={() => toggleCard('warmup')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-pink-900/70 to-rose-900/70 hover:bg-gradient-to-r hover:from-pink-800/70 hover:to-rose-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-pink-500/20 p-3 rounded-xl mr-4">
+                  <Sun className="h-6 w-6 text-pink-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Warm-up Routines', ar: 'روتينات الإحماء' })}</h2>
+              </div>
+              {expandedCards.warmup ? (
+                <ChevronUp className="h-5 w-5 text-pink-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-pink-300" />
+              )}
+            </button>
+            
+            {expandedCards.warmup && (
+              <div className="p-6">
+                {workoutData.warmupRoutines.general.map((routine, index) => (
+                  <div key={index} className="mb-6">
+                    <h3 className="text-lg font-bold text-pink-300 mb-3">{t(routine.title)}</h3>
+                    <ol className="space-y-3 pl-5 border-l-2 border-pink-500/30">
+                      {routine.steps.map((step, stepIndex) => (
+                        <li key={stepIndex} className="ml-3">
+                          <span className="text-pink-400 font-medium">{stepIndex + 1}.</span> 
+                          <span className="text-gray-200 mr-2">{t({ en: step.en, ar: step.ar })}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Nutrition Guide Card */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden">
+            <button 
+              onClick={() => toggleCard('nutrition')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-green-900/70 to-emerald-900/70 hover:bg-gradient-to-r hover:from-green-800/70 hover:to-emerald-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-green-500/20 p-3 rounded-xl mr-4">
+                  <Utensils className="h-6 w-6 text-green-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Nutrition Guide', ar: 'دليل التغذية' })}</h2>
+              </div>
+              {expandedCards.nutrition ? (
+                <ChevronUp className="h-5 w-5 text-green-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-green-300" />
+              )}
+            </button>
+            
+            {expandedCards.nutrition && (
+              <div className="p-6">
+                {/* Pre-workout nutrition */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-green-300 mb-4 flex items-center">
+                    <Zap className="h-5 w-5 mr-2" />
+                    {t({ en: 'Pre-Workout Nutrition', ar: 'التغذية قبل التمرين' })}
+                  </h3>
+                  
+                  {workoutData.nutrition.preWorkout.map((section, index) => (
+                    <div key={index} className="mb-6 bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                      <h4 className="font-bold text-green-200 mb-3">{t(section.title)}</h4>
+                      <ul className="space-y-2">
+                        {section.items.map((item, itemIndex) => (
+                          <li key={itemIndex} className="flex items-start">
+                            <Coffee className="h-4 w-4 text-green-400 mt-1 mr-2 flex-shrink-0" />
+                            <span className="text-gray-200">{t({ en: item.en, ar: item.ar })}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Post-workout nutrition */}
+                <div>
+                  <h3 className="text-lg font-bold text-green-300 mb-4 flex items-center">
+                    <Moon className="h-5 w-5 mr-2" />
+                    {t({ en: 'Post-Workout Nutrition', ar: 'التغذية بعد التمرين' })}
+                  </h3>
+                  
+                  {workoutData.nutrition.postWorkout.map((section, index) => (
+                    <div key={index} className="mb-6 bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                      <h4 className="font-bold text-green-200 mb-3">{t(section.title)}</h4>
+                      <ul className="space-y-2">
+                        {section.items.map((item, itemIndex) => (
+                          <li key={itemIndex} className="flex items-start">
+                            <Droplet className="h-4 w-4 text-green-400 mt-1 mr-2 flex-shrink-0" />
+                            <span className="text-gray-200">{t({ en: item.en, ar: item.ar })}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Fasting Workouts Card */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 overflow-hidden">
+            <button 
+              onClick={() => toggleCard('fasting')}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-purple-900/70 to-violet-900/70 hover:bg-gradient-to-r hover:from-purple-800/70 hover:to-violet-800/70 transition-all duration-300"
+            >
+              <div className="flex items-center">
+                <div className="bg-purple-500/20 p-3 rounded-xl mr-4">
+                  <Leaf className="h-6 w-6 text-purple-300" />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t({ en: 'Fasting Workouts', ar: 'تمارين أثناء الصيام' })}</h2>
+              </div>
+              {expandedCards.fasting ? (
+                <ChevronUp className="h-5 w-5 text-purple-300" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-purple-300" />
+              )}
+            </button>
+            
+            {expandedCards.fasting && (
+              <div className="p-6">
+                {workoutData.fasting.map((section, index) => (
+                  <div key={index} className="mb-8 bg-gray-900/50 rounded-lg p-5 border border-gray-700">
+                    <div className="flex items-start mb-4">
+                      <Brain className="h-5 w-5 text-purple-400 mt-0.5 mr-3 flex-shrink-0" />
+                      <h3 className="text-lg font-bold text-purple-300">{t(section.title)}</h3>
+                    </div>
+                    
+                    <p className="text-gray-200 mb-4 leading-relaxed">{t(section.content)}</p>
+                    
+                    <div className="mb-4">
+                      <h4 className="font-bold text-purple-200 mb-2 flex items-center">
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        {t({ en: 'Key Guidelines:', ar: 'إرشادات رئيسية:' })}
+                      </h4>
+                      <ul className="space-y-2 pl-5">
+                        {section.guidelines.map((guideline, idx) => (
+                          <li key={idx} className="text-gray-300">
+                            • {t({ en: guideline.en, ar: guideline.ar })}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-bold text-purple-200 mb-2 flex items-center">
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        {t({ en: 'Scientific References:', ar: 'مراجع علمية:' })}
+                      </h4>
+                      <ul className="space-y-1 pl-5 border-l-2 border-purple-500/30 py-2">
+                        {section.references.map((reference, idx) => (
+                          <li key={idx} className="text-sm text-gray-400">
+                            • {t({ en: reference.en, ar: reference.ar })}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Pre-Exercise Modal */}
+      {showPreExerciseModal && activeExercise && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-2xl w-full max-w-md border border-indigo-500/30 overflow-hidden">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-2xl font-bold text-indigo-300">{t(activeExercise.name)}</h3>
+                <button 
+                  onClick={() => setShowPreExerciseModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Warm-up instructions */}
+                <div className="bg-indigo-900/30 rounded-lg p-4 border border-indigo-500/30">
+                  <h4 className="font-bold text-indigo-200 mb-2 flex items-center">
+                    <Sun className="h-5 w-5 mr-2" />
+                    {t({ en: 'Warm-up Instructions', ar: 'تعليمات الإحماء' })}
+                  </h4>
+                  <p className="text-gray-200">{t(activeExercise.warmup)}</p>
+                </div>
+                
+                {/* Timer setup */}
+                <div className="bg-amber-900/20 rounded-lg p-4 border border-amber-500/30">
+                  <h4 className="font-bold text-amber-200 mb-3 flex items-center">
+                    <Timer className="h-5 w-5 mr-2" />
+                    {t({ en: 'Timer Setup', ar: 'إعداد المؤقت' })}
+                  </h4>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-gray-300">{t({ en: 'Rest Period:', ar: 'فترة الراحة:' })}</span>
+                    <span className="text-2xl font-mono font-bold text-amber-300">
+                      {Math.floor(activeExercise.rest / 60)}:{(activeExercise.rest % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    {t({ en: 'Set your timer for the rest period between sets. The timer will alert you when time is up.', ar: 'اضبط المؤقت لفترة الراحة بين المجموعات. سينبهك المؤقت عندما ينتهي الوقت.' })}
+                  </p>
+                </div>
+                
+                {/* Exercise description */}
+                <div className="bg-green-900/20 rounded-lg p-4 border border-green-500/30">
+                  <h4 className="font-bold text-green-200 mb-2">{t({ en: 'Exercise Description', ar: 'وصف التمرين' })}</h4>
+                  <p className="text-gray-200 italic">{t(activeExercise.desc)}</p>
+                </div>
+                
+                {/* Start timer button */}
+                <div className="pt-4 border-t border-gray-700">
+                  <button
+                    onClick={() => {
+                      setShowPreExerciseModal(false);
+                      startTimer('rest');
+                    }}
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center"
+                  >
+                    <Play className="h-5 w-5 mr-2" />
+                    {t({ en: 'Start Rest Timer', ar: 'بدء مؤقت الراحة' })}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-700 mt-8">
+        <div className="max-w-7xl mx-auto text-center text-gray-400">
+          <p className="text-lg font-medium bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-300 mb-2">
+            workouts.promedic1
+          </p>
+          <p className="mb-2">
+            {t({ 
+              en: 'Professional Training Strategies • No Backend Required',
+              ar: 'استراتيجيات تدريب احترافية • لا يتطلب خادم خلفي'
+            })}
+          </p>
+          <p className="text-sm opacity-80">
+            {t({ 
+              en: 'All training plans should be approved by a certified professional. Results may vary based on individual physiology.',
+              ar: 'يجب الموافقة على جميع خطط التدريب من قبل محترف معتمد. قد تختلف النتائج حسب علم وظائف الأعضاء الفردية.'
+            })}
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
